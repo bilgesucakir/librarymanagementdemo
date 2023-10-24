@@ -28,7 +28,7 @@ public class Book {
     private String genre;
 
     @Column(name="availability_status")
-    private boolean isAvailable;
+    private boolean available;
 
     @Column(name="multiple_author")
     private boolean multipleAuthors;
@@ -60,12 +60,12 @@ public class Book {
 
     public Book(){}
 
-    public Book(String title, String ISBN, int publicationYear, String genre, boolean isAvailable, boolean multipleAuthors) {
+    public Book(String title, String ISBN, int publicationYear, String genre, boolean available, boolean multipleAuthors) {
         this.title = title;
         this.ISBN = ISBN;
         this.publicationYear = publicationYear;
         this.genre = genre;
-        this.isAvailable = isAvailable;
+        this.available = available;
         this.multipleAuthors = multipleAuthors;
     }
 
@@ -110,19 +110,19 @@ public class Book {
     }
 
     public boolean isAvailable() {
-        return isAvailable;
+        return available;
     }
 
     public void setAvailable(boolean available) {
-        isAvailable = available;
+        this.available = available;
     }
 
-    public boolean isHaveMultipleAuthors() {
+    public boolean isMultipleAuthors() {
         return multipleAuthors;
     }
 
-    public void setHaveMultipleAuthors(boolean haveMultipleAuthors) {
-        this.multipleAuthors = haveMultipleAuthors;
+    public void setMultipleAuthors(boolean multipleAuthors) {
+        this.multipleAuthors = multipleAuthors;
     }
 
     public List<Author> getAuthors() {
@@ -176,11 +176,11 @@ public class Book {
                 ", ISBN='" + ISBN + '\'' +
                 ", publicationYear=" + publicationYear +
                 ", genre='" + genre + '\'' +
-                ", isAvailable=" + isAvailable +
-                ", haveMultipleAuthors=" + multipleAuthors +
+                ", available=" + available +
+                ", multipleAuthors=" + multipleAuthors +
                 ", libraryBranch=" + libraryBranch +
                 ", authors=" + authors +
+                ", checkouts=" + checkouts +
                 '}';
     }
-
 }
