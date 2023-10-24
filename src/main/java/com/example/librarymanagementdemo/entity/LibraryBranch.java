@@ -25,7 +25,7 @@ public class LibraryBranch {
     private int capacity;
 
     //librarybranch-book relationship
-    @OneToMany(mappedBy = "librarybranch",
+    @OneToMany(mappedBy = "libraryBranch",
     fetch = FetchType.LAZY,
     cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
@@ -80,13 +80,13 @@ public class LibraryBranch {
         this.books = books;
     }
 
-    public void addBooks(Book theBook){
+    public void addBooks(Book book){
         if(books == null){
             books = new ArrayList<>();
         }
-        books.add(theBook);
+        books.add(book);
 
-        theBook.setLibraryBranch(this);
+        book.setLibraryBranch(this);
     }
 
     @Override

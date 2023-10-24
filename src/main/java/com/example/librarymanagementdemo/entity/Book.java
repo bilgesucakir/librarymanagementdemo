@@ -31,7 +31,7 @@ public class Book {
     private boolean isAvailable;
 
     @Column(name="multiple_author")
-    private boolean haveMultipleAuthors;
+    private boolean multipleAuthors;
 
 
     //book-librarybranch relationship
@@ -51,18 +51,22 @@ public class Book {
             inverseJoinColumns = @JoinColumn(name="author_id"))
     private List<Author> authors;
 
-
     //book-checkout relationship
+    @OneToMany(mappedBy = "book",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH})
+    private List<Checkout> checkouts;
 
     public Book(){}
 
-    public Book(String title, String ISBN, int publicationYear, String genre, boolean isAvailable, boolean haveMultipleAuthors) {
+    public Book(String title, String ISBN, int publicationYear, String genre, boolean isAvailable, boolean multipleAuthors) {
         this.title = title;
         this.ISBN = ISBN;
         this.publicationYear = publicationYear;
         this.genre = genre;
         this.isAvailable = isAvailable;
-        this.haveMultipleAuthors = haveMultipleAuthors;
+        this.multipleAuthors = multipleAuthors;
     }
 
     public int getId() {
@@ -114,11 +118,11 @@ public class Book {
     }
 
     public boolean isHaveMultipleAuthors() {
-        return haveMultipleAuthors;
+        return multipleAuthors;
     }
 
     public void setHaveMultipleAuthors(boolean haveMultipleAuthors) {
-        this.haveMultipleAuthors = haveMultipleAuthors;
+        this.multipleAuthors = haveMultipleAuthors;
     }
 
     public List<Author> getAuthors() {
@@ -144,6 +148,26 @@ public class Book {
         this.libraryBranch = libraryBranch;
     }
 
+
+
+    public List<Checkout> getCheckouts() {
+        return checkouts;
+    }
+
+    public void setCheckouts(List<Checkout> checkouts) {
+        this.checkouts = checkouts;
+    }
+
+    public void addCheckouts(Checkout checkout){
+        if(checkouts == null){
+            checkouts = new ArrayList<>();
+        }
+        checkouts.add(checkout);
+
+        checkout.setBook(this);
+
+    }
+
     @Override
     public String toString() {
         return "Book{" +
@@ -153,9 +177,10 @@ public class Book {
                 ", publicationYear=" + publicationYear +
                 ", genre='" + genre + '\'' +
                 ", isAvailable=" + isAvailable +
-                ", haveMultipleAuthors=" + haveMultipleAuthors +
+                ", haveMultipleAuthors=" + multipleAuthors +
                 ", libraryBranch=" + libraryBranch +
                 ", authors=" + authors +
                 '}';
     }
+
 }

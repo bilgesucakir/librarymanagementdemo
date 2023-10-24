@@ -36,14 +36,6 @@ CREATE TABLE `librarybranch` (
     `capacity` INT
 )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
--- Create a join table for the many-to-many relationship between Book and LibraryBranch
-/*CREATE TABLE `book_location` (
-    `book_id` INT PRIMARY KEY,
-    `branch_id` INT,
-    CONSTRAINT `constraint3` FOREIGN KEY (`book_id`) REFERENCES `book` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-    CONSTRAINT `constraint4` FOREIGN KEY (`branch_id`) REFERENCES `librarybranch` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-);*/
-
 CREATE TABLE `book_author` (
     `book_id` INT,
     `author_id` INT,
@@ -57,18 +49,26 @@ CREATE TABLE `checkout` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `checked_out_date` DATE,
     `due_date` DATE,
-    `book_id` INT,
-    `user_id` INT,
+    `book_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
     CONSTRAINT `constraint3` FOREIGN KEY (`book_id`) REFERENCES `book` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-    CONSTRAINT `constraint4` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+    CONSTRAINT `constraint4` FOREIGN KEY (`user_id`) REFERENCES `libraryuser` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
--- Create the 'User' table
-CREATE TABLE `user` (
+-- User is divided into 2 tables
+-- libraryuser is needed for the relation with checkout, contatins non-sensitive information
+-- authuser is needed for authentication of the user and password storage, contains sensitive information
+CREATE TABLE `libraryuser` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `username` VARCHAR(50) NOT NULL,
-    `email` VARCHAR(100),
-    `password` VARCHAR(60) -- (for bcrypt)
+    `username` VARCHAR(50) UNIQUE NOT NULL,
+    `email` VARCHAR(100) UNIQUE NOT NULL,
+    `registration_date` DATE NOT NULL
+)ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `authuser`(
+	`username` VARCHAR(50),
+    `password` VARCHAR(60), -- For bcrypt
+    PRIMARY KEY (`username`)
 )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 SET FOREIGN_KEY_CHECKS = 1;
