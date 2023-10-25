@@ -1,5 +1,6 @@
 package com.example.librarymanagementdemo.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class LibraryUser { //only contains non-sensitive information, password w
     private String email;
 
     @Column(name="registration_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date registrationDate;
 
     //user-checkout relationship

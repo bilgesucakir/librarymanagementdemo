@@ -1,5 +1,6 @@
 package com.example.librarymanagementdemo.service;
 
+import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
 import com.example.librarymanagementdemo.repository.LibraryBranchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,4 +52,12 @@ public class LibraryBranchServiceImp implements LibraryBranchService{
     public void deleteById(int id) {
        libraryBranchRepository.deleteById(id);
     }
+
+    @Override
+    public LibraryBranch findByBookId(int bookId) {
+        return null;
+
+        //will be implemented after book part is started
+    }
+
 }

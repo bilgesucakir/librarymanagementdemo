@@ -8,7 +8,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/librarybranches") //updated from /api
 public class LibraryBranchRestController {
 
     private LibraryBranchService libraryBranchService;
@@ -18,16 +18,18 @@ public class LibraryBranchRestController {
         this.libraryBranchService = libraryBranchService;
     }
 
-    @GetMapping("/librarybranches")
+    @GetMapping
     public List<LibraryBranch> findAll() {
 
-        System.out.println("\nWill print all branches in db.");
+        System.out.println("\nWill return all branches in db.");
 
         return libraryBranchService.findAll();
     }
 
-    @GetMapping("/librarybranches/{libraryBranchId}")
+    @GetMapping("/{libraryBranchId}")
     public LibraryBranch getLibraryBranch(@PathVariable int libraryBranchId) {
+
+        System.out.println("\nWill try to return library branch with id: " + libraryBranchId);
 
         LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
 
@@ -35,19 +37,18 @@ public class LibraryBranchRestController {
             throw new RuntimeException("Couldn't find library branch with id: " + libraryBranchId);
         }
 
+        System.out.println("\nLibrary branch with id " + libraryBranchId + " is found.");
+
         return libraryBranch;
     }
 
-    @PostMapping("/librarybranches")
+    @PostMapping
     public LibraryBranch addLibraryBranch(@RequestBody LibraryBranch libraryBranch) {
 
         //for debug purposes
-        System.out.println("\nWill add a library branch do the database.");
+        System.out.println("\nWill add a library branch to the database.");
 
-        // also just in case they pass an id in JSON ... set id to 0
-        // this is to force a save of new item ... instead of update
-
-        libraryBranch.setId(0);
+        libraryBranch.setId(0); //to force a save of new item
 
         LibraryBranch branchInDB = libraryBranchService.save(libraryBranch);
 
@@ -56,21 +57,21 @@ public class LibraryBranchRestController {
         return branchInDB;
     }
 
-    @PutMapping("/librarybranches")
+    //addLibraryBranches might be added
+
+    @PutMapping
     public LibraryBranch updateLibraryBranch(@RequestBody LibraryBranch libraryBranch) {
 
         System.out.println("\nWill try to update a library branch from database.");
 
         LibraryBranch branchInDB = libraryBranchService.save(libraryBranch);
 
-        //no existing case not added yet.
-
         System.out.println("Updated library branch: " + branchInDB);
 
         return branchInDB;
     }
 
-    @DeleteMapping("/librarybranches/{libraryBranchId}")
+    @DeleteMapping("/{libraryBranchId}")
     public String deleteLibraryBranch(@PathVariable int libraryBranchId) {
 
         LibraryBranch tempLibraryBranch = libraryBranchService.findById(libraryBranchId);
@@ -86,5 +87,6 @@ public class LibraryBranchRestController {
         return "Deleted library branch id: " + libraryBranchId;
     }
 
+    //will add /books, /books/id, get queriy handling example /librarybranches, etc
 
 }

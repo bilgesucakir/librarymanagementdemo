@@ -15,5 +15,7 @@ public interface LibraryBranchService {
 
     void deleteById(int id);
 
+    LibraryBranch findByBookId(int bookId); //will be added
+
     //
 }
