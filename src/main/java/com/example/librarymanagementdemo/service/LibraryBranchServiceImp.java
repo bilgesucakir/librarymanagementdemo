@@ -32,9 +32,12 @@ public class LibraryBranchServiceImp implements LibraryBranchService{
         if (result.isPresent()) {
             libraryBranch = result.get();
         }
+
+        /*
         else {
             throw new RuntimeException("Couldn't find library branch with id: " + id);
         }
+        */
 
         return libraryBranch;
     }
@@ -46,12 +49,6 @@ public class LibraryBranchServiceImp implements LibraryBranchService{
 
     @Override
     public void deleteById(int id) {
-        if (libraryBranchRepository.existsById(id)){
-            libraryBranchRepository.deleteById(id);
-        }
-        else{
-            throw new RuntimeException("Deletion failed. Couldn't find library branch with id: " + id);
-        }
-
+       libraryBranchRepository.deleteById(id);
     }
 }
