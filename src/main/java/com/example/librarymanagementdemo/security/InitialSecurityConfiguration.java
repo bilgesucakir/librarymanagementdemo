@@ -25,6 +25,11 @@ public class InitialSecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/libraryusers").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/libraryusers").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/libraryusers/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/authors").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/authors/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/authors").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/authors").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/authors/**").authenticated()
         );
 
         // use HTTP Basic authentication

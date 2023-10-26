@@ -1,0 +1,14 @@
+imp order: (first to last)
+author - book - checkout
+
+handling some queries might be added
+
+exception handling
+
+error responses
+
+security config - authuser (with roles? role field should be added to the related table)
+
+use of bcrypt? - research for other crypt options suitable
+
+maybe frontend can be started with angular later on (as a separate project or addition to this one)
