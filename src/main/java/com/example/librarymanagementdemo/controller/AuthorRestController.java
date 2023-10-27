@@ -1,11 +1,13 @@
 package com.example.librarymanagementdemo.controller;
 
 import com.example.librarymanagementdemo.entity.Author;
-import com.example.librarymanagementdemo.entity.LibraryUser;
+import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.service.AuthorService;
+import com.example.librarymanagementdemo.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -13,10 +15,12 @@ import java.util.List;
 public class AuthorRestController {
 
     private AuthorService authorService;
+    private BookService bookService;
 
     @Autowired
-    public AuthorRestController(AuthorService authorService) {
+    public AuthorRestController(AuthorService authorService, BookService bookService) {
         this.authorService = authorService;
+        this.bookService = bookService;
     }
 
     @GetMapping
@@ -43,6 +47,35 @@ public class AuthorRestController {
         return author;
 
     }
+
+    @GetMapping("/{authorId}/books")
+    public List<Book> getBookOfAuthor(@PathVariable int authorId){
+        System.out.println("\nWill try to find author with id " + authorId + " to return its books.");
+
+        Author author = authorService.findById(authorId);
+
+        if(author == null){
+            throw new RuntimeException("Cannot return books. Couldn't find author with id: " + authorId);
+        }
+        else{
+
+            System.out.println("\nWill return all books of author with id " + authorId);
+
+            return bookService.findByAuthor(author);
+        }
+
+    }
+
+    @GetMapping
+    public List<Author> getAuthorByFilter(
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "birthdate", required = false) Date birthdate,
+            @RequestParam(name = "nationality", required = false) String nationality) {
+
+        return authorService.findByFilter(name, birthdate, nationality);
+    }
+
+
 
     @PostMapping
     public Author addAuthor(@RequestBody Author author) {

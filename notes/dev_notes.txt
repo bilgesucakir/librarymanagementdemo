@@ -1,7 +1,9 @@
-imp order: (first to last)
-author - book - checkout
 
-handling some queries might be added
+
+
+get mappings with filters (containing a field of entity) for all 5 entities
+
+post put delete should be tried out considering the relationships among entities, if not working correctly, change cascade types
 
 exception handling
 

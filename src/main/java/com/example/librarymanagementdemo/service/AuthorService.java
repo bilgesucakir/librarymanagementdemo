@@ -1,8 +1,10 @@
 package com.example.librarymanagementdemo.service;
 
 import com.example.librarymanagementdemo.entity.Author;
+import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryUser;
 
+import java.util.Date;
 import java.util.List;
 
 public interface AuthorService {
@@ -13,4 +15,8 @@ public interface AuthorService {
     Author save(Author author);
 
     void deleteById(int id);
+
+    List<Author> findByBook(Book book);
+
+    List<Author> findByFilter(String name, Date birthdate, String nationality);
 }

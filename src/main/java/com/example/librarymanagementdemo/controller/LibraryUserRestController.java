@@ -1,8 +1,11 @@
 package com.example.librarymanagementdemo.controller;
 
 
+import com.example.librarymanagementdemo.entity.Book;
+import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
 import com.example.librarymanagementdemo.entity.LibraryUser;
+import com.example.librarymanagementdemo.service.CheckoutService;
 import com.example.librarymanagementdemo.service.LibraryBranchService;
 import com.example.librarymanagementdemo.service.LibraryUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +19,12 @@ public class LibraryUserRestController {
 
     private LibraryUserService libraryUserService;
 
+    private CheckoutService checkoutService;
+
     @Autowired
-    public LibraryUserRestController(LibraryUserService libraryUserService) {
+    public LibraryUserRestController(LibraryUserService libraryUserService, CheckoutService checkoutService) {
         this.libraryUserService = libraryUserService;
+        this.checkoutService = checkoutService;
     }
 
     @GetMapping
@@ -43,6 +49,24 @@ public class LibraryUserRestController {
         System.out.println("\nLibrary user with id " + libraryUserId + " is found.");
 
         return libraryUser;
+
+    }
+
+    @GetMapping("/{libraryUserId}/checkouts")
+    public List<Checkout> getCheckoutOfLibraryUser(@PathVariable int libraryUserId){
+        System.out.println("\nWill try to find library user with id " + libraryUserId + " to return its checkouts.");
+
+        LibraryUser libraryUser = libraryUserService.findById(libraryUserId);
+
+        if(libraryUser == null){
+                throw new RuntimeException("Cannot return checkouts. Couldn't find library user with id: " + libraryUserId);
+        }
+        else{
+
+            System.out.println("\nWill return all checkouts of library user with id " + libraryUserId);
+
+            return checkoutService.findByLibraryUser(libraryUser);
+        }
 
     }
 

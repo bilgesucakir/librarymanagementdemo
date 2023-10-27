@@ -1,5 +1,8 @@
 package com.example.librarymanagementdemo.controller;
+import com.example.librarymanagementdemo.entity.Author;
+import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
+import com.example.librarymanagementdemo.service.BookService;
 import com.example.librarymanagementdemo.service.LibraryBranchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +15,12 @@ import java.util.List;
 public class LibraryBranchRestController {
 
     private LibraryBranchService libraryBranchService;
+    private BookService bookService;
 
     @Autowired
-    public LibraryBranchRestController(LibraryBranchService libraryBranchService) {
+    public LibraryBranchRestController(LibraryBranchService libraryBranchService, BookService bookService) {
         this.libraryBranchService = libraryBranchService;
+        this.bookService = bookService;
     }
 
     @GetMapping
@@ -40,6 +45,24 @@ public class LibraryBranchRestController {
         System.out.println("\nLibrary branch with id " + libraryBranchId + " is found.");
 
         return libraryBranch;
+    }
+
+    @GetMapping("/{libraryBranchId}/books")
+    public List<Book> getBookOfLibraryBranch(@PathVariable int libraryBranchId){
+        System.out.println("\nWill try to find library branch with id " + libraryBranchId + " to return its books.");
+
+        LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
+
+        if(libraryBranch == null){
+            throw new RuntimeException("Cannot return books. Couldn't find library branch with id: " + libraryBranchId);
+        }
+        else{
+
+            System.out.println("\nWill return all books of library branch with id " + libraryBranchId);
+
+            return bookService.findByLibraryBranch(libraryBranch);
+        }
+
     }
 
     @PostMapping
