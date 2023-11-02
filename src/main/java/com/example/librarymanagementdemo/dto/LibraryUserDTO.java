@@ -1,24 +1,62 @@
 package com.example.librarymanagementdemo.dto;
 
 import com.example.librarymanagementdemo.entity.LibraryUser;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 import java.net.Inet4Address;
+import java.util.Date;
 import java.util.List;
 
 public class LibraryUserDTO {
 
-    private LibraryUser libraryUser;
+
+    private int id;
+
+    private String username;
+
+    private String email;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date registrationDate;
 
     private List<Integer> checkoutIds;
 
     public LibraryUserDTO(){}
 
-    public LibraryUser getLibraryUser() {
-        return libraryUser;
+    public int getId() {
+        return id;
     }
 
-    public void setLibraryUser(LibraryUser libraryUser) {
-        this.libraryUser = libraryUser;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
     }
 
     public List<Integer> getCheckoutIds() {
@@ -29,10 +67,14 @@ public class LibraryUserDTO {
         this.checkoutIds = checkoutIds;
     }
 
+
     @Override
     public String toString() {
         return "LibraryUserDTO{" +
-                "libraryUser=" + libraryUser +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", registrationDate=" + registrationDate +
                 ", checkoutIds=" + checkoutIds +
                 '}';
     }

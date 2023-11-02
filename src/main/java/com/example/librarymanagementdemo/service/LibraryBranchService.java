@@ -24,4 +24,8 @@ public interface LibraryBranchService {
 
     LibraryBranch convertLibraryBranchDTOToLibraryBranchEntity(LibraryBranchDTO dto);
 
+    LibraryBranchDTO convertLibraryBranchEntityToLibraryBranchDTO(LibraryBranch libraryBranch);
+
+    LibraryBranch updateLibraryBranchPartially(LibraryBranch libraryBranch, LibraryBranchDTO libraryBranchDTO);
+
 }

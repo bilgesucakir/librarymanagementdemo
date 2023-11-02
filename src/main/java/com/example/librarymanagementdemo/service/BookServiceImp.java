@@ -10,8 +10,10 @@ import jakarta.persistence.Column;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImp implements  BookService{
@@ -83,15 +85,16 @@ public class BookServiceImp implements  BookService{
     }
 
     @Override
-    public Book setFieldsAndSaveBook(Book book, LibraryBranch libraryBranch, List<Checkout> checkouts, List<Author> authors) {
+    public Book setFieldsAndSaveBook(Book book, LibraryBranch libraryBranch, List<Author> authors) {
 
-        //libraryBranch cannot be null
-        Book tempBook = setLibraryBranchOfBook(book, libraryBranch);
+        Book tempBook = book;
 
-        if(checkouts != null){
-            tempBook = setCheckoutsOfBook(tempBook, checkouts);
+        if(libraryBranch != null){
+            tempBook = setLibraryBranchOfBook(book, libraryBranch);
         }
-        if(authors != null){
+
+
+        if(authors != null && authors.size() > 0){
             tempBook = setAuthorsOfBook(tempBook, authors);
         }
 
@@ -101,9 +104,81 @@ public class BookServiceImp implements  BookService{
 
     @Override
     public Book convertBookDTOToBookEntity(BookDTO dto) {
-        Book book = dto.getBook();
+        Book book = new Book();
+
+        book.setId(dto.getId());
+        book.setTitle(dto.getTitle());
+        book.setAvailable(dto.isAvailable());
+        book.setGenre(dto.getGenre());
+        book.setISBN(dto.getISBN());
+        book.setPublicationYear(dto.getPublicationYear());
+        book.setMultipleAuthors(dto.isMultipleAuthors());
 
         return book;
+    }
+
+    @Override
+    public BookDTO convertBookEntityToBookDTO(Book book) {
+        BookDTO dto = new BookDTO();
+
+        dto.setId(book.getId());
+        dto.setTitle(book.getTitle());
+        dto.setAvailable(book.isAvailable());
+        dto.setGenre(book.getGenre());
+        dto.setISBN(book.getISBN());
+        dto.setPublicationYear(book.getPublicationYear());
+        dto.setMultipleAuthors(book.isMultipleAuthors());
+
+        if(book.getAuthors() == null){
+            List<Integer> emptyList = new ArrayList<>();
+            dto.setAuthorIds(emptyList);
+        }
+        else{
+            dto.setAuthorIds(book.getAuthors().stream()
+                    .map(Author::getId)
+                    .collect(Collectors.toList()));
+        }
+
+        dto.setLibraryBranchId(book.getLibraryBranch().getId());
+
+        if(book.getCheckouts() == null){
+            List<Integer> emptyList = new ArrayList<>();
+            dto.setCheckoutIds(emptyList);
+        }
+        else{
+            dto.setCheckoutIds(book.getCheckouts().stream()
+                    .map(Checkout::getId)
+                    .collect(Collectors.toList()));
+
+        }
+        return dto;
+
+    }
+
+    @Override
+    public Book updateBookPartially(Book book, BookDTO bookDTO) {
+
+        if(bookDTO.getISBN() != null){
+            book.setISBN(bookDTO.getISBN());
+        }
+        if(bookDTO.isAvailable() != book.isAvailable()){
+            book.setAvailable(bookDTO.isAvailable());
+        }
+        if(bookDTO.isMultipleAuthors() != book.isMultipleAuthors()){
+            book.setMultipleAuthors(bookDTO.isMultipleAuthors());
+        }
+        if(bookDTO.getTitle() != null){
+            book.setTitle(bookDTO.getTitle());
+        }
+        if(bookDTO.getPublicationYear() != null){
+            book.setPublicationYear(bookDTO.getPublicationYear());
+        }
+        if(bookDTO.getGenre() != null){
+            book.setGenre(bookDTO.getGenre());
+        }
+
+        return book;
+
     }
 
 

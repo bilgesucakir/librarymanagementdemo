@@ -24,4 +24,7 @@ public interface AuthorService {
 
     Author convertAuthorDTOToAuthorEntity(AuthorDTO dto);
 
+    AuthorDTO convertAuthorEntityToAuthorDTO(Author author);
+
+    Author updateAuthorPartially(Author author, AuthorDTO authorDTO);
 }

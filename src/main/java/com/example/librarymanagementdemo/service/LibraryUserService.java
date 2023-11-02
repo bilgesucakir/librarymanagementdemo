@@ -19,4 +19,8 @@ public interface LibraryUserService {
 
     LibraryUser convertLibraryUserDTOToLibraryUserEntity(LibraryUserDTO dto);
 
+    LibraryUserDTO convertLibraryUserEntityTolibraryUserDTO(LibraryUser libraryUser);
+
+    LibraryUser updateLibraryUserPartially(LibraryUser libraryUser, LibraryUserDTO libraryUserDTO);
+
 }

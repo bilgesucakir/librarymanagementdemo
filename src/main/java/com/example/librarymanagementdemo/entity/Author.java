@@ -1,6 +1,8 @@
 package com.example.librarymanagementdemo.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -36,6 +38,9 @@ public class Author {
     @JoinTable(name="book_author",
             joinColumns = @JoinColumn(name="author_id"),
             inverseJoinColumns = @JoinColumn(name="book_id"))
+    @JsonIdentityInfo(
+            generator = ObjectIdGenerators.PropertyGenerator.class,
+            property = "id")
     private List<Book> books;
 
     public Author(){}
@@ -109,7 +114,7 @@ public class Author {
                 ", biography='" + biography + '\'' +
                 ", birthdate=" + birthdate +
                 ", nationality='" + nationality + '\'' +
-                ", books=" + books +
+                //", books=" + books +
                 '}';
     }
 }

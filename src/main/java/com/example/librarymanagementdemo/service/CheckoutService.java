@@ -1,5 +1,6 @@
 package com.example.librarymanagementdemo.service;
 
+import com.example.librarymanagementdemo.dto.AuthorDTO;
 import com.example.librarymanagementdemo.dto.BookDTO;
 import com.example.librarymanagementdemo.dto.CheckoutDTO;
 import com.example.librarymanagementdemo.entity.*;
@@ -23,4 +24,7 @@ public interface CheckoutService {
 
     Checkout convertCheckoutDTOToCheckoutEntity(CheckoutDTO dto);
 
+    CheckoutDTO convertCheckoutEntityToCheckoutDTO(Checkout checkout);
+
+    Author updateCheckoutPartially(Checkout checkout, CheckoutDTO checkoutDTO);
 }

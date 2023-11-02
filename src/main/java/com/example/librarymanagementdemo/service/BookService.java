@@ -28,7 +28,12 @@ public interface BookService {
 
     Book setAuthorsOfBook(Book book, List<Author> authors);
 
-    Book setFieldsAndSaveBook(Book book, LibraryBranch libraryBranch, List<Checkout> checkouts, List<Author> authors);
+    Book setFieldsAndSaveBook(Book book, LibraryBranch libraryBranch, List<Author> authors);
 
     Book convertBookDTOToBookEntity(BookDTO dto);
+
+    BookDTO convertBookEntityToBookDTO(Book book);
+
+
+    Book updateBookPartially(Book book, BookDTO bookDTO);
 }

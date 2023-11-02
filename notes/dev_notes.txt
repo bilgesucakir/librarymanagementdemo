@@ -19,3 +19,6 @@ maybe frontend can be started with angular later on (as a separate project or ad
 
 post of book to library branch works.
 But what will happen for checkout? if post book imp does not work for checkout, maybe it can be changed too. Like only get an id. Much simpler.
+
+
+alter dtos, remove nested entities, return dtos to the user

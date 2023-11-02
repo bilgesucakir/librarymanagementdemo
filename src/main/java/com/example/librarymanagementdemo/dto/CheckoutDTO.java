@@ -1,34 +1,63 @@
 package com.example.librarymanagementdemo.dto;
 
 import com.example.librarymanagementdemo.entity.Checkout;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+import java.util.Date;
 
 public class CheckoutDTO {
 
-    private Checkout checkout;
-    private int userId;
-    private int bookId;
+    private int id;
 
-    public Checkout getCheckout() {
-        return checkout;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private Date checkedOutDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private Date dueDate;
+    private Integer userId;
+    private Integer bookId;
+
+    public int getId() {
+        return id;
     }
 
-    public void setCheckout(Checkout checkout) {
-        this.checkout = checkout;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public int getUserId() {
+    public Date getCheckedOutDate() {
+        return checkedOutDate;
+    }
+
+    public void setCheckedOutDate(Date checkedOutDate) {
+        this.checkedOutDate = checkedOutDate;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
-    public int getBookId() {
+    public Integer getBookId() {
         return bookId;
     }
 
-    public void setBookId(int bookId) {
+    public void setBookId(Integer bookId) {
         this.bookId = bookId;
     }
 
@@ -37,7 +66,9 @@ public class CheckoutDTO {
     @Override
     public String toString() {
         return "CheckoutDTO{" +
-                "checkout=" + checkout +
+                "id=" + id +
+                ", checkedOutDate=" + checkedOutDate +
+                ", dueDate=" + dueDate +
                 ", userId=" + userId +
                 ", bookId=" + bookId +
                 '}';

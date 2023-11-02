@@ -98,7 +98,7 @@ public class LibraryBranch {
                 ", name='" + name + '\'' +
                 ", location='" + location + '\'' +
                 ", capacity=" + capacity +
-                ", books=" + books +
+                //", books=" + books +
                 '}';
     }
 }

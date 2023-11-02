@@ -1,18 +1,22 @@
 package com.example.librarymanagementdemo.service;
 
 import com.example.librarymanagementdemo.dto.AuthorDTO;
+import com.example.librarymanagementdemo.dto.BookDTO;
 import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
+import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.example.librarymanagementdemo.repository.AuthorRepository;
 import com.example.librarymanagementdemo.repository.LibraryUserRepository;
-import jakarta.persistence.EntityManager;
+import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthorServiceImp implements AuthorService{
@@ -47,6 +51,7 @@ public class AuthorServiceImp implements AuthorService{
         return author;
     }
 
+
     @Override
     public Author save(Author author) {
         return authorRepository.save(author);
@@ -75,6 +80,44 @@ public class AuthorServiceImp implements AuthorService{
 
     @Override
     public Author convertAuthorDTOToAuthorEntity(AuthorDTO dto) {
+        //
+
+        Author author = new Author();
+
+        author.setId(dto.getId());
+        author.setName(dto.getName());
+        author.setBiography(dto.getBiography());
+        author.setNationality(dto.getNationality());
+
+        //books will be set after checks done
+
+        return author;
+    }
+
+    @Override
+    public AuthorDTO convertAuthorEntityToAuthorDTO(Author author) {
+
+        AuthorDTO dto = new AuthorDTO();
+
+        dto.setId(author.getId());
+        dto.setName(author.getName());
+        dto.setBiography(author.getBiography());
+        dto.setNationality(author.getNationality());
+
+        if(author.getBooks() == null){
+            List<Integer> emptyList = new ArrayList<>();
+            dto.setBookIds(emptyList);
+        }
+        dto.setBookIds(author.getBooks().stream()
+                .map(Book::getId)
+                .collect(Collectors.toList()));
+
+
+        return dto;
+    }
+
+    @Override
+    public Author updateAuthorPartially(Author author, AuthorDTO authorDTO) {
         return null;
     }
 }

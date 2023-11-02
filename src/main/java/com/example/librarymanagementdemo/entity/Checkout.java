@@ -1,5 +1,6 @@
 package com.example.librarymanagementdemo.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -13,9 +14,11 @@ public class Checkout {
     @Column(name="id")
     private int id;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name="checked_out_date")
     private Date checkedOutDate;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name="due_date")
     private Date dueDate;
 

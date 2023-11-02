@@ -1,13 +1,23 @@
 package com.example.librarymanagementdemo.service;
 
+import com.example.librarymanagementdemo.dto.CheckoutDTO;
 import com.example.librarymanagementdemo.dto.LibraryUserDTO;
+import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.example.librarymanagementdemo.repository.LibraryUserRepository;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LibraryUserServiceImp implements LibraryUserService{
@@ -49,6 +59,44 @@ public class LibraryUserServiceImp implements LibraryUserService{
 
     @Override
     public LibraryUser convertLibraryUserDTOToLibraryUserEntity(LibraryUserDTO dto) {
+
+        LibraryUser libraryUser = new LibraryUser();
+
+        libraryUser.setId(dto.getId());
+        libraryUser.setUsername(dto.getUsername());
+        libraryUser.setEmail(dto.getEmail());
+        libraryUser.setRegistrationDate(dto.getRegistrationDate());
+
+        //checkouts will be set after checks done
+
+        return libraryUser;
+    }
+
+    @Override
+    public LibraryUserDTO convertLibraryUserEntityTolibraryUserDTO(LibraryUser libraryUser) {
+
+        LibraryUserDTO dto = new LibraryUserDTO();
+
+        dto.setId(libraryUser.getId());
+        dto.setEmail(libraryUser.getEmail());
+        dto.setUsername(libraryUser.getUsername());
+        dto.setRegistrationDate(libraryUser.getRegistrationDate());
+
+        if(libraryUser.getCheckouts() == null){
+            List<Integer> emptyList = new ArrayList<>();
+            dto.setCheckoutIds(emptyList);
+        }
+        else{
+            dto.setCheckoutIds(libraryUser.getCheckouts().stream()
+                    .map(Checkout::getId)
+                    .collect(Collectors.toList()));
+        }
+
+        return dto;
+    }
+
+    @Override
+    public LibraryUser updateLibraryUserPartially(LibraryUser libraryUser, LibraryUserDTO libraryUserDTO) {
         return null;
     }
 }
