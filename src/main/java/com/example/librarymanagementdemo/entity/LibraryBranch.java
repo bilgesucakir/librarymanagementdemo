@@ -1,6 +1,7 @@
 package com.example.librarymanagementdemo.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class LibraryBranch {
     fetch = FetchType.LAZY,
     cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
+    @JsonManagedReference
     private List<Book> books;
 
 

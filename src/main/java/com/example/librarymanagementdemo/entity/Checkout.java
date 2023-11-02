@@ -19,14 +19,14 @@ public class Checkout {
     @Column(name="due_date")
     private Date dueDate;
 
-    //checkout-libraryuser relationship
+    //checkout-libraryuser relationship //jsonbackreference?
     @ManyToOne(cascade= {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name="user_id")
     private LibraryUser libraryUser;
 
-    //checkout-book relationship
+    //checkout-book relationship //json back reference
     @ManyToOne(cascade= {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})

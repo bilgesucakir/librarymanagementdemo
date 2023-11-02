@@ -56,7 +56,7 @@ CREATE TABLE `checkout` (
 )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- User is divided into 2 tables
--- libraryuser is needed for the relation with checkout, contatins non-sensitive information
+-- libraryuser is needed for the relation with checkout, contains non-sensitive information
 -- authuser is needed for authentication of the user and password storage, contains sensitive information
 CREATE TABLE `libraryuser` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,

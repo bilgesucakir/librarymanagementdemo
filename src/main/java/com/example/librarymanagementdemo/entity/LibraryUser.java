@@ -27,7 +27,7 @@ public class LibraryUser { //only contains non-sensitive information, password w
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date registrationDate;
 
-    //user-checkout relationship
+    //user-checkout relationship //jsonmanagedreference?
     @OneToMany(mappedBy = "libraryUser",
     fetch = FetchType.LAZY,
     cascade = {CascadeType.PERSIST, CascadeType.MERGE,

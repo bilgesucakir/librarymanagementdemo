@@ -1,5 +1,6 @@
 package com.example.librarymanagementdemo.service;
 
+import com.example.librarymanagementdemo.dto.LibraryUserDTO;
 import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.example.librarymanagementdemo.repository.LibraryUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,5 +45,10 @@ public class LibraryUserServiceImp implements LibraryUserService{
     @Override
     public void deleteById(int id) {
         libraryUserRepository.deleteById(id);
+    }
+
+    @Override
+    public LibraryUser convertLibraryUserDTOToLibraryUserEntity(LibraryUserDTO dto) {
+        return null;
     }
 }

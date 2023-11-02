@@ -7,7 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Date;
 import java.util.List;
 
-public interface AuthorRepository extends JpaRepository<Author, Integer> {
+// automatically considered a Spring bean by Spring Data JPA
+public interface AuthorRepository extends JpaRepository<Author, Integer> { //2nd param is type of the id field in entity
     List<Author> findByBooksContaining(Book book);
 
 

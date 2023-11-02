@@ -1,6 +1,8 @@
 package com.example.librarymanagementdemo.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ public class Book {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name="library_branch_id")
+    @JsonBackReference
     private LibraryBranch libraryBranch;
 
     //book-author relationship
@@ -51,7 +54,7 @@ public class Book {
             inverseJoinColumns = @JoinColumn(name="author_id"))
     private List<Author> authors;
 
-    //book-checkout relationship
+    //book-checkout relationship //jsonmanagedrefreence?
     @OneToMany(mappedBy = "book",
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,

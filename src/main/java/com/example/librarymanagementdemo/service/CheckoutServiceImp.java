@@ -1,5 +1,6 @@
 package com.example.librarymanagementdemo.service;
 
+import com.example.librarymanagementdemo.dto.CheckoutDTO;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryUser;
@@ -55,5 +56,10 @@ public class CheckoutServiceImp implements CheckoutService{
     @Override
     public List<Checkout> findByLibraryUser(LibraryUser libraryUser) {
         return checkoutRepository.findByLibraryUser(libraryUser);
+    }
+
+    @Override
+    public Checkout convertCheckoutDTOToCheckoutEntity(CheckoutDTO dto) {
+        return null;
     }
 }

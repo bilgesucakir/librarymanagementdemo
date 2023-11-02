@@ -80,7 +80,23 @@ public class LibraryBranchRestController {
         return branchInDB;
     }
 
-    //addLibraryBranches might be added
+    /*@PostMapping("/{libraryBranchId}/books")
+    public Book addBookToLibraryBranch(@RequestBody Book book, @PathVariable int libraryBranchId){
+
+        LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
+
+        if(libraryBranch == null){
+            throw new RuntimeException("Cannot add book. Couldn't find library branch with id: " + libraryBranchId);
+        }
+        else{
+
+            System.out.println("\nWill add the book to library branch with id " + libraryBranchId);
+
+            return bookService.saveBookWithLibraryBranch(book, libraryBranch);
+        }
+
+    }*/
+
 
     @PutMapping
     public LibraryBranch updateLibraryBranch(@RequestBody LibraryBranch libraryBranch) {

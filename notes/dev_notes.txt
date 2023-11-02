@@ -14,3 +14,8 @@ security config - authuser (with roles? role field should be added to the relate
 use of bcrypt? - research for other crypt options suitable
 
 maybe frontend can be started with angular later on (as a separate project or addition to this one)
+
+
+
+post of book to library branch works.
+But what will happen for checkout? if post book imp does not work for checkout, maybe it can be changed too. Like only get an id. Much simpler.

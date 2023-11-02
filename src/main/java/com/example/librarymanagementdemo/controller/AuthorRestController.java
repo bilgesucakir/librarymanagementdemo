@@ -24,11 +24,26 @@ public class AuthorRestController {
     }
 
     @GetMapping
-    public List<Author> findAll(){
+    public List<Author> findAllOrFilter(
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "birthdate", required = false) Date birthdate,
+            @RequestParam(name = "nationality", required = false) String nationality
 
-        System.out.println("\nWill return all authors in db.");
+    ){ //gets param from request body with name
 
-        return authorService.findAll();
+        if(name == null && birthdate == null && nationality == null){
+            //no filtering, calling findAll
+
+            System.out.println("\nWill return all authors in db.");
+
+            return authorService.findAll();
+        }
+        else{
+            //some filtering exists
+
+            return authorService.findByFilter(name, birthdate, nationality);
+        }
+
     }
 
     @GetMapping("/{authorId}")
@@ -49,7 +64,7 @@ public class AuthorRestController {
     }
 
     @GetMapping("/{authorId}/books")
-    public List<Book> getBookOfAuthor(@PathVariable int authorId){
+    public List<Book> getBookOfAuthor(@PathVariable int authorId){ //comes from url
         System.out.println("\nWill try to find author with id " + authorId + " to return its books.");
 
         Author author = authorService.findById(authorId);
@@ -66,19 +81,8 @@ public class AuthorRestController {
 
     }
 
-    @GetMapping
-    public List<Author> getAuthorByFilter(
-            @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "birthdate", required = false) Date birthdate,
-            @RequestParam(name = "nationality", required = false) String nationality) {
-
-        return authorService.findByFilter(name, birthdate, nationality);
-    }
-
-
-
     @PostMapping
-    public Author addAuthor(@RequestBody Author author) {
+    public Author addAuthor(@RequestBody Author author) { //get entity params from body
 
         //for debug purposes
         System.out.println("\nWill add an author to the database.");
@@ -91,6 +95,8 @@ public class AuthorRestController {
 
         return authorInDB;
     }
+
+    //try post mapping, /books/{bookId}/authors and send author data to associate author with book
 
     @PutMapping
     public Author updateAuthor(@RequestBody Author author) {

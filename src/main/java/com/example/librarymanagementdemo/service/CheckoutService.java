@@ -1,5 +1,7 @@
 package com.example.librarymanagementdemo.service;
 
+import com.example.librarymanagementdemo.dto.BookDTO;
+import com.example.librarymanagementdemo.dto.CheckoutDTO;
 import com.example.librarymanagementdemo.entity.*;
 
 import java.util.List;
@@ -18,4 +20,7 @@ public interface CheckoutService {
     List<Checkout> findByBook(Book book);
 
     List<Checkout> findByLibraryUser(LibraryUser libraryUser);
+
+    Checkout convertCheckoutDTOToCheckoutEntity(CheckoutDTO dto);
+
 }

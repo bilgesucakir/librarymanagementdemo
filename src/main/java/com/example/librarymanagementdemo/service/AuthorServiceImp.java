@@ -1,5 +1,6 @@
 package com.example.librarymanagementdemo.service;
 
+import com.example.librarymanagementdemo.dto.AuthorDTO;
 import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryUser;
@@ -21,7 +22,7 @@ public class AuthorServiceImp implements AuthorService{
 
     private EntityManager entityManager;
 
-    @Autowired
+    @Autowired //for auto dependency injection --> constructor injeciton
     public AuthorServiceImp(AuthorRepository authorRepository, EntityManager entityManager) {
         this.authorRepository = authorRepository;
         this.entityManager = entityManager;
@@ -69,6 +70,11 @@ public class AuthorServiceImp implements AuthorService{
 
         //check if params are null, if not null, filter accordingly
 
+        return null;
+    }
+
+    @Override
+    public Author convertAuthorDTOToAuthorEntity(AuthorDTO dto) {
         return null;
     }
 }

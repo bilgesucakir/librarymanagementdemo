@@ -3,9 +3,11 @@ package com.example.librarymanagementdemo.controller;
 import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.Checkout;
+import com.example.librarymanagementdemo.entity.LibraryBranch;
 import com.example.librarymanagementdemo.service.AuthorService;
 import com.example.librarymanagementdemo.service.BookService;
 import com.example.librarymanagementdemo.service.CheckoutService;
+import com.example.librarymanagementdemo.service.LibraryBranchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +20,16 @@ public class BookRestController {
     private BookService bookService;
     private AuthorService authorService;
 
+    private LibraryBranchService libraryBranchService;
+
     private CheckoutService checkoutService;
 
     @Autowired
-    public BookRestController(BookService bookService, AuthorService authorService, CheckoutService checkoutService) {
+    public BookRestController(BookService bookService, AuthorService authorService, CheckoutService checkoutService, LibraryBranchService libraryBranchService) {
         this.bookService = bookService;
         this.authorService = authorService;
         this.checkoutService = checkoutService;
+        this.libraryBranchService = libraryBranchService;
     }
 
     @GetMapping
@@ -91,18 +96,32 @@ public class BookRestController {
     }
 
     @PostMapping
-    public Book addBook(@RequestBody Book book) {
+    public Book addBook(@RequestBody Book book, @RequestParam int libraryBranchId)
+                         { //add this under /librarybranches/{lbid}/books?
 
         //for debug purposes
-        System.out.println("\nWill add a book to the database.");
+        System.out.println("\nWill add a book to the database under library branch with id: " + libraryBranchId + ".");
 
-        book.setId(0);
+        LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
 
-        Book bookInDB = bookService.save(book);
+        if(libraryBranch == null){
+            throw new RuntimeException("Cannot add book. Couldn't find library branch with id: " + libraryBranchId);
+        }
+        else{
 
-        System.out.println("Saved book: " + bookInDB);
+            System.out.println("\nWill add the book to library branch with id " + libraryBranchId);
 
-        return bookInDB;
+            book.setId(0);
+
+
+
+            Book bookInDB = bookService.setFieldsAndSaveBook(book, libraryBranch, null, null);
+
+            System.out.println("Saved book: " + bookInDB);
+
+            return bookInDB;
+        }
+
     }
 
     @PutMapping

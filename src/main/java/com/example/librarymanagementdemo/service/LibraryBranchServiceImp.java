@@ -1,5 +1,6 @@
 package com.example.librarymanagementdemo.service;
 
+import com.example.librarymanagementdemo.dto.LibraryBranchDTO;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
 import com.example.librarymanagementdemo.repository.LibraryBranchRepository;
@@ -58,6 +59,11 @@ public class LibraryBranchServiceImp implements LibraryBranchService{
         return null;
 
         //will be implemented after book part is started
+    }
+
+    @Override
+    public LibraryBranch convertLibraryBranchDTOToLibraryBranchEntity(LibraryBranchDTO dto) {
+        return null;
     }
 
 }

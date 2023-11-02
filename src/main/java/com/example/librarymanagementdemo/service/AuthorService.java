@@ -1,5 +1,7 @@
 package com.example.librarymanagementdemo.service;
 
+import com.example.librarymanagementdemo.dto.AuthorDTO;
+import com.example.librarymanagementdemo.dto.BookDTO;
 import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryUser;
@@ -19,4 +21,7 @@ public interface AuthorService {
     List<Author> findByBook(Book book);
 
     List<Author> findByFilter(String name, Date birthdate, String nationality);
+
+    Author convertAuthorDTOToAuthorEntity(AuthorDTO dto);
+
 }
