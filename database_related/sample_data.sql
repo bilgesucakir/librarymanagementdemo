@@ -1,1 +1,0 @@
--- This file will contain sample data entries for tables in db for convenience
