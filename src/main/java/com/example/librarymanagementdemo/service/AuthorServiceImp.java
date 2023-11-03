@@ -9,6 +9,10 @@ import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.example.librarymanagementdemo.repository.AuthorRepository;
 import com.example.librarymanagementdemo.repository.LibraryUserRepository;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,17 +74,39 @@ public class AuthorServiceImp implements AuthorService{
     @Override
     public List<Author> findByFilter(String name, Date birthdate, String nationality) {
 
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Author> query = builder.createQuery(Author.class);
+        Root<Author> root = query.from(Author.class);
 
-        //entity manager part
+        // Create a list to hold the predicates
+        List<Predicate> predicates = new ArrayList<>();
 
-        //check if params are null, if not null, filter accordingly
+        // Add predicates based on the parameters
+        if (name != null) {
+            predicates.add(builder.equal(root.get("name"), name));
+        }
 
-        return null;
+        if (birthdate != null) {
+            predicates.add(builder.equal(root.get("birthdate"), birthdate));
+        }
+
+        if (nationality != null) {
+            predicates.add(builder.equal(root.get("nationality"), nationality));
+        }
+
+        // Combine the predicates with AND
+        if (!predicates.isEmpty()) {
+            query.where(builder.and(predicates.toArray(new Predicate[0])));
+        }
+
+        // Create a TypedQuery
+        TypedQuery<Author> typedQuery = entityManager.createQuery(query);
+
+        return typedQuery.getResultList();
     }
 
     @Override
     public Author convertAuthorDTOToAuthorEntity(AuthorDTO dto) {
-        //
 
         Author author = new Author();
 
@@ -88,6 +114,7 @@ public class AuthorServiceImp implements AuthorService{
         author.setName(dto.getName());
         author.setBiography(dto.getBiography());
         author.setNationality(dto.getNationality());
+        author.setBirthdate(dto.getBirthdate());
 
         //books will be set after checks done
 
@@ -103,6 +130,7 @@ public class AuthorServiceImp implements AuthorService{
         dto.setName(author.getName());
         dto.setBiography(author.getBiography());
         dto.setNationality(author.getNationality());
+        dto.setBirthdate(author.getBirthdate());
 
         if(author.getBooks() == null){
             List<Integer> emptyList = new ArrayList<>();
@@ -112,12 +140,46 @@ public class AuthorServiceImp implements AuthorService{
                 .map(Book::getId)
                 .collect(Collectors.toList()));
 
-
         return dto;
     }
 
     @Override
     public Author updateAuthorPartially(Author author, AuthorDTO authorDTO) {
-        return null;
+        //id already exists
+
+        if(authorDTO.getName() != null){
+            author.setName(authorDTO.getName());
+        }
+        if(authorDTO.getBiography() != null){
+            author.setBiography(authorDTO.getBiography());
+        }
+        if(authorDTO.getBirthdate() != null){
+            author.setBirthdate(authorDTO.getBirthdate());
+        }
+        if(authorDTO.getNationality() != null){
+            author.setNationality(authorDTO.getNationality());
+        }
+
+        return author;
+
+        //books set separately
+    }
+
+    @Override
+    public Author setBooksAndSaveAuthor(Author author, List<Book> books) {
+        Author tempAuthor = author;
+
+        if(books != null && books.size() > 0){
+            tempAuthor = setBooksOfAuthor(tempAuthor, books);
+        }
+
+        return save(tempAuthor);
+    }
+
+    public Author setBooksOfAuthor(Author author, List<Book> books) {
+
+        author.setBooks(books);
+
+        return author;
     }
 }

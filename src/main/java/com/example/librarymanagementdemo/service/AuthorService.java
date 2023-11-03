@@ -27,4 +27,6 @@ public interface AuthorService {
     AuthorDTO convertAuthorEntityToAuthorDTO(Author author);
 
     Author updateAuthorPartially(Author author, AuthorDTO authorDTO);
+
+    Author setBooksAndSaveAuthor(Author author, List<Book> books);
 }

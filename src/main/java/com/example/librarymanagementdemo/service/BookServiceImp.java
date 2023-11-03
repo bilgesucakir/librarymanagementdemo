@@ -158,6 +158,7 @@ public class BookServiceImp implements  BookService{
     @Override
     public Book updateBookPartially(Book book, BookDTO bookDTO) {
 
+        //id already exists
         if(bookDTO.getISBN() != null){
             book.setISBN(bookDTO.getISBN());
         }

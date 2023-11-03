@@ -97,6 +97,17 @@ public class LibraryUserServiceImp implements LibraryUserService{
 
     @Override
     public LibraryUser updateLibraryUserPartially(LibraryUser libraryUser, LibraryUserDTO libraryUserDTO) {
-        return null;
+
+        if(libraryUserDTO.getEmail() != null){
+            libraryUser.setEmail(libraryUserDTO.getEmail());
+        }
+        if(libraryUserDTO.getUsername() != null) {
+            libraryUser.setUsername(libraryUserDTO.getUsername());
+        }
+        if(libraryUserDTO.getRegistrationDate() != null){
+            libraryUser.setRegistrationDate(libraryUser.getRegistrationDate());
+        }
+
+        return libraryUser;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.librarymanagementdemo.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
@@ -24,6 +25,7 @@ public class Author {
     @Column(name="biography")
     private String biography;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name="birthdate")
     private Date birthdate;
 

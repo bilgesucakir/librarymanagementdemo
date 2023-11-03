@@ -1,5 +1,7 @@
 package com.example.librarymanagementdemo.controller;
 
+import com.example.librarymanagementdemo.dto.AuthorDTO;
+import com.example.librarymanagementdemo.dto.BookDTO;
 import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.service.AuthorService;
@@ -7,6 +9,7 @@ import com.example.librarymanagementdemo.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,30 +27,53 @@ public class AuthorRestController {
     }
 
     @GetMapping
-    public List<Author> findAllOrFilter(
+    public List<AuthorDTO> findAllOrFilter(
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "birthdate", required = false) Date birthdate,
             @RequestParam(name = "nationality", required = false) String nationality
 
     ){ //gets param from request body with name
 
+        List<Author> authors = new ArrayList<>();
+
         if(name == null && birthdate == null && nationality == null){
             //no filtering, calling findAll
 
             System.out.println("\nWill return all authors in db.");
 
-            return authorService.findAll();
+            authors =  authorService.findAll();
         }
         else{
             //some filtering exists
 
-            return authorService.findByFilter(name, birthdate, nationality);
+            System.out.print("\nWill return all authors in db with following filters: ");
+            if(name!= null){
+                System.out.print("name=" + name+ " ");
+            }
+            if(birthdate!= null){
+                System.out.print("birthdate=" + birthdate+ " ");
+            }
+            if(nationality!= null){
+                System.out.print("nationality=" + nationality);
+            }
+
+            authors =  authorService.findByFilter(name, birthdate, nationality);
         }
+
+        List<AuthorDTO> authorDTOs = new ArrayList<>();
+
+        for(Author author : authors){
+            AuthorDTO authorDTO = authorService.convertAuthorEntityToAuthorDTO(author);
+
+            authorDTOs.add(authorDTO);
+        }
+
+        return authorDTOs;
 
     }
 
     @GetMapping("/{authorId}")
-    public Author getAuthor(@PathVariable int authorId){
+    public AuthorDTO getAuthor(@PathVariable int authorId){
 
         System.out.println("\nWill try to return author with id: " + authorId);
 
@@ -59,12 +85,14 @@ public class AuthorRestController {
 
         System.out.println("\nAuthor with id " + authorId + " is found.");
 
-        return author;
+        AuthorDTO authorDTO = authorService.convertAuthorEntityToAuthorDTO(author);
+
+        return authorDTO;
 
     }
 
     @GetMapping("/{authorId}/books")
-    public List<Book> getBookOfAuthor(@PathVariable int authorId){ //comes from url
+    public List<BookDTO> getBookOfAuthor(@PathVariable int authorId){ //comes from url
         System.out.println("\nWill try to find author with id " + authorId + " to return its books.");
 
         Author author = authorService.findById(authorId);
@@ -76,38 +104,116 @@ public class AuthorRestController {
 
             System.out.println("\nWill return all books of author with id " + authorId);
 
-            return bookService.findByAuthor(author);
+
+            List<Book> books = bookService.findByAuthor(author);
+            List<BookDTO> bookDTOs = new ArrayList<>();
+
+            for(Book book : books){
+                BookDTO bookDTO = bookService.convertBookEntityToBookDTO(book);
+
+                bookDTOs.add(bookDTO);
+            }
+
+            return bookDTOs;
         }
 
     }
 
     @PostMapping
-    public Author addAuthor(@RequestBody Author author) { //get entity params from body
+    public AuthorDTO addAuthor(@RequestBody AuthorDTO authorDTO) { //get entity params from body
 
         //for debug purposes
         System.out.println("\nWill add an author to the database.");
 
-        author.setId(0);
+        authorDTO.setId(0);
 
-        Author authorInDB = authorService.save(author);
+        Author author = authorService.convertAuthorDTOToAuthorEntity(authorDTO);
+
+
+        List<Integer> bookIds = authorDTO.getBookIds();
+        List<Book> books = new ArrayList<>();
+
+        //book list check
+        for(int id: bookIds){
+            Book book = bookService.findById(id);
+
+            if (author == null) {
+                System.out.println("No book found with id: " + id + ". Will not be added to books list.");
+            } else{
+                System.out.println("Book find with id: " + id + ", as " + book + ".\nWill be added to books list.");
+                books.add(book);
+            }
+        }
+
+        Author authorInDB = authorService.setBooksAndSaveAuthor(author, books);
 
         System.out.println("Saved author: " + authorInDB);
 
-        return authorInDB;
+        AuthorDTO returnAuthorDTO = authorService.convertAuthorEntityToAuthorDTO(authorInDB);
+
+        return returnAuthorDTO;
+
     }
 
-    //try post mapping, /books/{bookId}/authors and send author data to associate author with book
-
     @PutMapping
-    public Author updateAuthor(@RequestBody Author author) {
+    public AuthorDTO updateAuthor(@RequestBody AuthorDTO authorDTO) {
 
         System.out.println("\nWill try to update an author from database.");
 
-        Author authorInDB = authorService.save(author);
+        /*Author authorInDB = authorService.save(author);
 
         System.out.println("Updated author: " + authorInDB);
 
-        return authorInDB;
+        return authorInDB;*/
+
+        Author author = new Author();
+        //if author exists or not
+        if(authorDTO.getId() != null){ //replace existing instance
+
+            author = authorService.findById(authorDTO.getId());
+
+            if(author == null){
+                throw new RuntimeException("Cannot update author. No author exists with id: " + authorDTO.getId() );
+            }
+
+        }
+        else{ //cretae new instance
+            author.setId(0);
+        }
+
+        author = authorService.updateAuthorPartially(author, authorDTO);
+
+        Author authorInDB = new Author();
+
+        //book checks
+        if(authorDTO.getBookIds()!= null){
+            List<Integer> bookIds = authorDTO.getBookIds();
+            List<Book> books = new ArrayList<>();
+
+            //book list check
+            for(int id: bookIds){
+                Book book = bookService.findById(id);
+
+                if(book == null){
+                    System.out.println("No book found with id: " + id + ". Will not be added to books list.");
+
+                }
+                else{
+                    System.out.println("Book find with id: " + id + ", as " + book + ".\nWill be added to books list.");
+                    books.add(book);
+                }
+            }
+            authorInDB = authorService.setBooksAndSaveAuthor(author, books);
+        }
+        else{
+            authorInDB = authorService.setBooksAndSaveAuthor(author, null);
+        }
+
+        System.out.println("Saved author: " + authorInDB);
+
+        AuthorDTO returnAuthorDTO = authorService.convertAuthorEntityToAuthorDTO(authorInDB);
+
+        return returnAuthorDTO;
     }
 
     @DeleteMapping("/{authorId}")

@@ -1,8 +1,3 @@
-
-
-
-get mappings with filters (containing a field of entity) for all 5 entities
-
 post put delete should be tried out considering the relationships among entities, if not working correctly, change cascade types
 
 exception handling
@@ -17,8 +12,24 @@ maybe frontend can be started with angular later on (as a separate project or ad
 
 
 
-post of book to library branch works.
-But what will happen for checkout? if post book imp does not work for checkout, maybe it can be changed too. Like only get an id. Much simpler.
+3.11.2023 notes
+
+check for relations - update, delete situations
+-book author checked
+-librarybranch book checked (deletion of library branch should be checked)
+-checkout relations remain,
 
 
-alter dtos, remove nested entities, return dtos to the user
+dto implementations -> libraryuser put, checkout controller, library branch controller and service remain
+author->ok
+book->ok
+
+
+filtering -> book,libraryuser,librarybranch,checkout remain
+author->ok
+
+
+after all of these finished, transforming return types to response entity can be done
+
+
+

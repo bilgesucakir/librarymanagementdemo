@@ -7,6 +7,7 @@ import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.example.librarymanagementdemo.repository.CheckoutRepository;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -94,12 +95,43 @@ public class CheckoutServiceImp implements CheckoutService{
         dto.setUserId(checkout.getLibraryUser().getId());
 
         return dto;
-
-
     }
 
     @Override
-    public Author updateCheckoutPartially(Checkout checkout, CheckoutDTO checkoutDTO) {
-        return null;
+    public Checkout updateCheckoutPartially(Checkout checkout, CheckoutDTO checkoutDTO) {
+
+        if(checkoutDTO.getDueDate() != null){
+            checkout.setDueDate(checkoutDTO.getDueDate());
+        }
+        if(checkoutDTO.getCheckedOutDate() != null){
+            checkout.setCheckedOutDate(checkoutDTO.getCheckedOutDate());
+        }
+
+        return checkout;
+        //user id book id cannot be altered by checkout itself, this entity cannot exist without both of them
+    }
+
+    @Override
+    public Checkout setFieldsAndSaveCheckout(Checkout checkout, Book book, LibraryUser libraryUser){
+        //book and library user field cannot be null
+
+        checkout = setBookOfCheckout(checkout, book);
+        checkout = setLibraryUserOfCheckout(checkout, libraryUser);
+
+        return save(checkout);
+    }
+
+    @Override
+    public Checkout setBookOfCheckout(Checkout checkout, Book book) {
+        checkout.setBook(book);
+
+        return checkout;
+    }
+
+    @Override
+    public Checkout setLibraryUserOfCheckout(Checkout checkout, LibraryUser libraryUser) {
+        checkout.setLibraryUser(libraryUser);
+
+        return checkout;
     }
 }

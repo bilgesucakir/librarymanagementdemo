@@ -26,5 +26,11 @@ public interface CheckoutService {
 
     CheckoutDTO convertCheckoutEntityToCheckoutDTO(Checkout checkout);
 
-    Author updateCheckoutPartially(Checkout checkout, CheckoutDTO checkoutDTO);
+    Checkout updateCheckoutPartially(Checkout checkout, CheckoutDTO checkoutDTO);
+
+    Checkout setFieldsAndSaveCheckout(Checkout checkout, Book book, LibraryUser libraryUser);
+
+    Checkout setBookOfCheckout(Checkout checkout, Book book);
+
+    Checkout setLibraryUserOfCheckout(Checkout checkout, LibraryUser libraryUser);
 }

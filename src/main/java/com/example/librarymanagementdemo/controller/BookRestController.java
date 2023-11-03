@@ -116,17 +116,15 @@ public class BookRestController {
 
             System.out.println("\nWill return all checkouts of book with id " + bookId);
 
-            List<CheckoutDTO> checkoutsDTO = new ArrayList<>();
-
+            List<CheckoutDTO> checkoutDTOs = new ArrayList<>();
             List<Checkout> checkouts = checkoutService.findByBook(book);
 //
             for(Checkout checkout : checkouts){
                 CheckoutDTO checkoutDTO = checkoutService.convertCheckoutEntityToCheckoutDTO(checkout);
-                checkoutsDTO.add(checkoutDTO);
+                checkoutDTOs.add(checkoutDTO);
             }
 
-            return checkoutsDTO;
-
+            return checkoutDTOs;
         }
 
     }
@@ -134,6 +132,8 @@ public class BookRestController {
     @PostMapping
     public BookDTO addBook(@RequestBody BookDTO bookDTO)
     {
+
+        System.out.println("Received bookDTO: " + bookDTO);
 
         if(bookDTO.getLibraryBranchId() == null){
             throw new RuntimeException("Library branch id is not provided. Cannot add book.");
@@ -190,9 +190,8 @@ public class BookRestController {
 
         System.out.println("\nWill try to update a book from database.");
 
+        //library branch check
         Integer libraryBranchId = bookDTO.getLibraryBranchId();
-
-        System.out.println(libraryBranchId);
 
         LibraryBranch libraryBranch = null;
 
@@ -206,22 +205,23 @@ public class BookRestController {
         }
 
         Book book = new Book();
-
+        //if book exists or not check
         if(bookDTO.getId() != null){
             book = bookService.findById(bookDTO.getId());
 
-            if(book != null){
-                book = bookService.updateBookPartially(book, bookDTO);
+            if(book == null){
+                throw new RuntimeException("Cannot update book. No book exists with id: " + bookDTO.getId() );
             }
-            else{
-                book = bookService.convertBookDTOToBookEntity(bookDTO);
-            }
-
+        }
+        else{
+            book.setId(0);
         }
 
+        book = bookService.updateBookPartially(book, bookDTO);
 
+        Book bookInDB = new Book();
 
-
+        //author checks
         if(bookDTO.getAuthorIds() != null){
             List<Integer> authorIds = bookDTO.getAuthorIds();
             List<Author> authors = new ArrayList<>();
@@ -238,27 +238,18 @@ public class BookRestController {
                 }
 
             }
-
-            Book bookInDB = bookService.setFieldsAndSaveBook(book, libraryBranch, authors);
-
-            System.out.println("Saved book: " + bookInDB);
-
-            BookDTO returnBookDTO = bookService.convertBookEntityToBookDTO(bookInDB);
-
-            return returnBookDTO;
+            bookInDB = bookService.setFieldsAndSaveBook(book, libraryBranch, authors);
         }
         else{
-            Book bookInDB = bookService.setFieldsAndSaveBook(book, libraryBranch, null);
-
-            System.out.println("Saved book: " + bookInDB);
-
-            BookDTO returnBookDTO = bookService.convertBookEntityToBookDTO(bookInDB);
-
-            return returnBookDTO;
+            bookInDB = bookService.setFieldsAndSaveBook(book, libraryBranch, null);
         }
 
         //checkouts will be assigned by adding a checkout. Not from post/put book.
+        System.out.println("Saved book: " + bookInDB);
 
+        BookDTO returnBookDTO = bookService.convertBookEntityToBookDTO(bookInDB);
+
+        return returnBookDTO;
     }
 
     @DeleteMapping("/{bookId}")

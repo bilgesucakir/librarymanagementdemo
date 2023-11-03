@@ -1,6 +1,8 @@
 package com.example.librarymanagementdemo.controller;
 
 
+import com.example.librarymanagementdemo.dto.CheckoutDTO;
+import com.example.librarymanagementdemo.dto.LibraryUserDTO;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
@@ -11,6 +13,7 @@ import com.example.librarymanagementdemo.service.LibraryUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -28,15 +31,27 @@ public class LibraryUserRestController {
     }
 
     @GetMapping
-    public List<LibraryUser> findAll(){
+    public List<LibraryUserDTO> findAll(){
+
+        List<LibraryUser> libraryUsers = new ArrayList<>();
 
         System.out.println("\nWill return all users in db.");
 
-        return libraryUserService.findAll();
+        libraryUsers =  libraryUserService.findAll();
+
+        List<LibraryUserDTO> libraryUserDTOs = new ArrayList<>();
+
+        for(LibraryUser libraryUser : libraryUsers){
+            LibraryUserDTO libraryUserDTO  = libraryUserService.convertLibraryUserEntityTolibraryUserDTO(libraryUser);
+
+            libraryUserDTOs.add(libraryUserDTO);
+        }
+
+        return libraryUserDTOs;
     }
 
     @GetMapping("/{libraryUserId}")
-    public LibraryUser getLibraryUser(@PathVariable int libraryUserId){
+    public LibraryUserDTO getLibraryUser(@PathVariable int libraryUserId){
 
         System.out.println("\nWill try to return library branch with id: " + libraryUserId);
 
@@ -48,12 +63,14 @@ public class LibraryUserRestController {
 
         System.out.println("\nLibrary user with id " + libraryUserId + " is found.");
 
-        return libraryUser;
+
+        LibraryUserDTO libraryUserDTO = libraryUserService.convertLibraryUserEntityTolibraryUserDTO(libraryUser);
+        return libraryUserDTO;
 
     }
 
     @GetMapping("/{libraryUserId}/checkouts")
-    public List<Checkout> getCheckoutOfLibraryUser(@PathVariable int libraryUserId){
+    public List<CheckoutDTO> getCheckoutOfLibraryUser(@PathVariable int libraryUserId){
         System.out.println("\nWill try to find library user with id " + libraryUserId + " to return its checkouts.");
 
         LibraryUser libraryUser = libraryUserService.findById(libraryUserId);
@@ -65,27 +82,38 @@ public class LibraryUserRestController {
 
             System.out.println("\nWill return all checkouts of library user with id " + libraryUserId);
 
-            return checkoutService.findByLibraryUser(libraryUser);
+            List<CheckoutDTO> checkoutDTOs = new ArrayList<>();
+            List<Checkout> checkouts = checkoutService.findByLibraryUser(libraryUser);
+            for(Checkout checkout : checkouts){
+                CheckoutDTO checkoutDTO = checkoutService.convertCheckoutEntityToCheckoutDTO(checkout);
+                checkoutDTOs.add(checkoutDTO);
+            }
+
+            return checkoutDTOs;
         }
 
     }
 
     @PostMapping
-    public LibraryUser addLibraryUser(@RequestBody LibraryUser libraryUser) {
+    public LibraryUserDTO addLibraryUser(@RequestBody LibraryUserDTO libraryUserDTO) {
 
         //for debug purposes
         System.out.println("\nWill add a library user to the database.");
 
-        libraryUser.setId(0);
+        libraryUserDTO.setId(0);
+
+        LibraryUser libraryUser = libraryUserService.convertLibraryUserDTOToLibraryUserEntity(libraryUserDTO);
 
         LibraryUser userInDB = libraryUserService.save(libraryUser);
 
         System.out.println("Saved library user: " + userInDB);
 
-        return userInDB;
+        LibraryUserDTO returnLibraryUserDTO = libraryUserService.convertLibraryUserEntityTolibraryUserDTO(userInDB);
+
+        return returnLibraryUserDTO;
     }
 
-    @PutMapping
+    @PutMapping //not finished, will be updated according to dto
     public LibraryUser updateLibraryUser(@RequestBody LibraryUser libraryUser) {
 
         System.out.println("\nWill try to update a library user from database.");
