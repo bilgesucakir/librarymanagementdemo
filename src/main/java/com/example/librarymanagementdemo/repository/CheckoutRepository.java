@@ -22,8 +22,4 @@ public interface CheckoutRepository extends JpaRepository<Checkout, Integer> {
 
     List<Checkout> findByDueDateBefore(Date dueDate);
 
-
-
-
-
 }

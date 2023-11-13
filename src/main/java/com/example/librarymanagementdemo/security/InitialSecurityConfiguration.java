@@ -43,11 +43,10 @@ public class InitialSecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, "/api/checkouts/**").authenticated()
         );
 
-        // use HTTP Basic authentication
+        //use HTTP Basic authentication
         http.httpBasic(Customizer.withDefaults());
 
-        // disable Cross Site Request Forgery (CSRF)
-        // in general, not required for stateless REST APIs that use POST, PUT, DELETE and/or PATCH
+        //disable Cross Site Request Forgery (CSRF)
         http.csrf(csrf -> csrf.disable());
 
         return http.build();

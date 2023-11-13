@@ -9,4 +9,5 @@ import java.util.List;
 public interface LibraryBranchRepository extends JpaRepository<LibraryBranch, Integer> {
 
     List<LibraryBranch> findByBooksContaining(Book book);
+
 }

@@ -1,6 +1,5 @@
 package com.example.librarymanagementdemo.entity;
 
-
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 

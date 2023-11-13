@@ -1,9 +1,5 @@
 package com.example.librarymanagementdemo.dto;
 
-import com.example.librarymanagementdemo.entity.Book;
-import com.example.librarymanagementdemo.entity.Checkout;
-import jakarta.persistence.Column;
-
 import java.util.List;
 
 public class BookDTO {

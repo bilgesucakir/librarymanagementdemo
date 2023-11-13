@@ -1,8 +1,6 @@
 package com.example.librarymanagementdemo.service;
 
-import com.example.librarymanagementdemo.dto.LibraryBranchDTO;
 import com.example.librarymanagementdemo.dto.LibraryUserDTO;
-import com.example.librarymanagementdemo.entity.LibraryBranch;
 import com.example.librarymanagementdemo.entity.LibraryUser;
 
 import java.util.List;

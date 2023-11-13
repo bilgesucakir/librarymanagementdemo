@@ -1,7 +1,7 @@
 package com.example.librarymanagementdemo.controller;
+
 import com.example.librarymanagementdemo.dto.BookDTO;
 import com.example.librarymanagementdemo.dto.LibraryBranchDTO;
-import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
 import com.example.librarymanagementdemo.service.BookService;
@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 
 @RestController
 @RequestMapping("/api/librarybranches")

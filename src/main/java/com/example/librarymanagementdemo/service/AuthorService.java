@@ -1,10 +1,8 @@
 package com.example.librarymanagementdemo.service;
 
 import com.example.librarymanagementdemo.dto.AuthorDTO;
-import com.example.librarymanagementdemo.dto.BookDTO;
 import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
-import com.example.librarymanagementdemo.entity.LibraryUser;
 
 import java.util.Date;
 import java.util.List;

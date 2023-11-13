@@ -1,16 +1,13 @@
 package com.example.librarymanagementdemo.controller;
 
-
 import com.example.librarymanagementdemo.dto.CheckoutDTO;
 import com.example.librarymanagementdemo.dto.LibraryUserDTO;
-import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.example.librarymanagementdemo.service.CheckoutService;
 import com.example.librarymanagementdemo.service.LibraryUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -6,7 +6,6 @@ import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
 import com.example.librarymanagementdemo.repository.BookRepository;
-import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -206,7 +205,6 @@ public class BookServiceImp implements  BookService{
 
         }
         return dto;
-
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.example.librarymanagementdemo.service;
 
-import com.example.librarymanagementdemo.dto.BookDTO;
 import com.example.librarymanagementdemo.dto.LibraryBranchDTO;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryBranch;

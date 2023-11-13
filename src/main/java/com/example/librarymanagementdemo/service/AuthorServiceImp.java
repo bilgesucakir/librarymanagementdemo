@@ -1,13 +1,9 @@
 package com.example.librarymanagementdemo.service;
 
 import com.example.librarymanagementdemo.dto.AuthorDTO;
-import com.example.librarymanagementdemo.dto.BookDTO;
 import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
-import com.example.librarymanagementdemo.entity.Checkout;
-import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.example.librarymanagementdemo.repository.AuthorRepository;
-import com.example.librarymanagementdemo.repository.LibraryUserRepository;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;

@@ -1,11 +1,6 @@
 package com.example.librarymanagementdemo.dto;
 
-import com.example.librarymanagementdemo.entity.Checkout;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 import java.util.Date;
 

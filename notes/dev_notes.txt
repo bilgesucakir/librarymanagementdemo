@@ -8,23 +8,9 @@ use of bcrypt? - research for other crypt options suitable
 
 maybe frontend can be started with angular later on (as a separate project or addition to this one)
 
-filtering -> book,libraryuser,librarybranch,checkout remain
-author->ok
-(can be excluded from checkout for now)
-
 mapper classes (entity-dto mapping can be moved there, but what about partial update)
 
 after all of these finished, transforming return types to response entity can be done
 
-
-
-book cannot be deleted until checkout is deleted - should delete checkout before deleting the book - cascade.type remove
-lu finished, lb
-
-
-book id cannot be updated with add library branch and update library branch
-
-
-save edilen luserın checkoutsı empty list mi kontrol et
 
 

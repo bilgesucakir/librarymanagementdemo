@@ -17,4 +17,5 @@ public interface LibraryUserRepository extends JpaRepository<LibraryUser, Intege
     boolean existsLibraryUserByUsernameEquals(String username);
 
     boolean existsLibraryUserByEmailEquals(String email);
+
 }

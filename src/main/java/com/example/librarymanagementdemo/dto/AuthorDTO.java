@@ -1,18 +1,12 @@
 package com.example.librarymanagementdemo.dto;
 
-import com.example.librarymanagementdemo.entity.Author;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.util.Date;
 import java.util.List;
 
 public class AuthorDTO {
-
 
     private int id;
     private String name;

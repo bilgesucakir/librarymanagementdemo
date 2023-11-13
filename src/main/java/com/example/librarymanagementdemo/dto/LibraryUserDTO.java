@@ -1,18 +1,11 @@
 package com.example.librarymanagementdemo.dto;
 
-import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
-import java.net.Inet4Address;
 import java.util.Date;
 import java.util.List;
 
 public class LibraryUserDTO {
-
 
     private int id;
 
