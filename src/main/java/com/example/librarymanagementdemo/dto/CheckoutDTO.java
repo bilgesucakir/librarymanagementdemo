@@ -13,10 +13,10 @@ public class CheckoutDTO {
 
     private int id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date checkedOutDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date dueDate;
     private Integer userId;
     private Integer bookId;

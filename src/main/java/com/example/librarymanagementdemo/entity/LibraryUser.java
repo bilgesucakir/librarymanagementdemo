@@ -1,6 +1,7 @@
 package com.example.librarymanagementdemo.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -30,8 +31,8 @@ public class LibraryUser { //only contains non-sensitive information, password w
     //user-checkout relationship //jsonmanagedreference?
     @OneToMany(mappedBy = "libraryUser",
     fetch = FetchType.LAZY,
-    cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH})
+    cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Checkout> checkouts;
 
     public LibraryUser(){}
@@ -99,7 +100,7 @@ public class LibraryUser { //only contains non-sensitive information, password w
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", registrationDate=" + registrationDate +
-                ", checkouts=" + checkouts +
+                //", checkouts=" + checkouts +
                 '}';
     }
 }

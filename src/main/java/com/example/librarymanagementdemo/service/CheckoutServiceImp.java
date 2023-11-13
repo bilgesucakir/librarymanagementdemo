@@ -113,11 +113,13 @@ public class CheckoutServiceImp implements CheckoutService{
 
     @Override
     public Checkout setFieldsAndSaveCheckout(Checkout checkout, Book book, LibraryUser libraryUser){
-        //book and library user field cannot be null
 
-        checkout = setBookOfCheckout(checkout, book);
-        checkout = setLibraryUserOfCheckout(checkout, libraryUser);
-
+        if(book != null){
+            checkout = setBookOfCheckout(checkout, book);
+        }
+        if(libraryUser != null){
+            checkout = setLibraryUserOfCheckout(checkout, libraryUser);
+        }
         return save(checkout);
     }
 

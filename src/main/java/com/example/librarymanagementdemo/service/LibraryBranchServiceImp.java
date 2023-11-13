@@ -1,17 +1,14 @@
 package com.example.librarymanagementdemo.service;
 
-import com.example.librarymanagementdemo.dto.CheckoutDTO;
 import com.example.librarymanagementdemo.dto.LibraryBranchDTO;
 import com.example.librarymanagementdemo.entity.Book;
-import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
 import com.example.librarymanagementdemo.repository.LibraryBranchRepository;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +40,6 @@ public class LibraryBranchServiceImp implements LibraryBranchService{
             libraryBranch = result.get();
         }
 
-        /*
-        else {
-            throw new RuntimeException("Couldn't find library branch with id: " + id);
-        }
-        */
-
         return libraryBranch;
     }
 
@@ -57,16 +48,27 @@ public class LibraryBranchServiceImp implements LibraryBranchService{
         return libraryBranchRepository.save(libraryBranch);
     }
 
+
     @Override
-    public void deleteById(int id) {
-       libraryBranchRepository.deleteById(id);
+    public LibraryBranch setBooksOfLibraryBranch(LibraryBranch libraryBranch, List<Book> books) {
+        libraryBranch.setBooks(books);
+
+        return libraryBranch;
+    }
+    @Override
+    public LibraryBranch setBooksAndSaveLibraryBranch(LibraryBranch libraryBranch, List<Book> books) {
+
+        LibraryBranch tempLibraryBranch = libraryBranch;
+
+        if (books != null) {
+            tempLibraryBranch = setBooksOfLibraryBranch(tempLibraryBranch, books);
+        }
+        return save(tempLibraryBranch);
     }
 
     @Override
-    public LibraryBranch findByBookId(int bookId) {
-        return null;
-
-        //will be implemented after book part is started
+    public void deleteById(int id) {
+       libraryBranchRepository.deleteById(id);
     }
 
     @Override
@@ -112,7 +114,18 @@ public class LibraryBranchServiceImp implements LibraryBranchService{
 
     @Override
     public LibraryBranch updateLibraryBranchPartially(LibraryBranch libraryBranch, LibraryBranchDTO libraryBranchDTO) {
-        return null;
-    }
 
+        //id already exists
+        if(libraryBranchDTO.getName() != null){
+            libraryBranch.setName(libraryBranchDTO.getName());
+        }
+        if(libraryBranchDTO.getCapacity() != null){
+            libraryBranch.setCapacity(libraryBranchDTO.getCapacity());
+        }
+        if(libraryBranchDTO.getLocation() != null){
+            libraryBranch.setLocation(libraryBranchDTO.getLocation());
+        }
+
+        return libraryBranch;
+    }
 }

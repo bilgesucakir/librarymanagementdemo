@@ -23,4 +23,7 @@ public interface LibraryUserService {
 
     LibraryUser updateLibraryUserPartially(LibraryUser libraryUser, LibraryUserDTO libraryUserDTO);
 
+    boolean libraryUserExistsWithUsernameOrNot(String username);
+
+    boolean libraryUserExistsWithEmailOrNot(String email);
 }

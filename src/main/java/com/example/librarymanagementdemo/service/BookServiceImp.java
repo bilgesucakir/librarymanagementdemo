@@ -94,7 +94,7 @@ public class BookServiceImp implements  BookService{
         }
 
 
-        if(authors != null && authors.size() > 0){
+        if(authors != null){
             tempBook = setAuthorsOfBook(tempBook, authors);
         }
 

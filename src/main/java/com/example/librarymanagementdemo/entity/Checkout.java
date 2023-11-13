@@ -1,5 +1,6 @@
 package com.example.librarymanagementdemo.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
@@ -14,11 +15,11 @@ public class Checkout {
     @Column(name="id")
     private int id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name="checked_out_date")
     private Date checkedOutDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name="due_date")
     private Date dueDate;
 
@@ -27,6 +28,7 @@ public class Checkout {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name="user_id")
+    @JsonBackReference
     private LibraryUser libraryUser;
 
     //checkout-book relationship //json back reference
@@ -34,6 +36,7 @@ public class Checkout {
             CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name="book_id")
+    @JsonBackReference
     private Book book;
 
     public Checkout(){}
@@ -89,8 +92,8 @@ public class Checkout {
                 "id=" + id +
                 ", checkedOutDate=" + checkedOutDate +
                 ", dueDate=" + dueDate +
-                ", libraryUser=" + libraryUser +
-                ", book=" + book +
+               // ", libraryUser=" + libraryUser +
+                //", book=" + book +
                 '}';
     }
 }

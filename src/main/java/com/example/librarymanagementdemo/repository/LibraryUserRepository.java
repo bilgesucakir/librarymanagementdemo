@@ -13,4 +13,8 @@ public interface LibraryUserRepository extends JpaRepository<LibraryUser, Intege
     List<LibraryUser> findByEmail(String email);
 
     List<LibraryUser> findByCheckoutsContaining(Checkout checkout);
+
+    boolean existsLibraryUserByUsernameEquals(String username);
+
+    boolean existsLibraryUserByEmailEquals(String email);
 }

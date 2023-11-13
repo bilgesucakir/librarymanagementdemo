@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/books")
@@ -23,9 +25,7 @@ public class BookRestController {
 
     private BookService bookService;
     private AuthorService authorService;
-
     private LibraryBranchService libraryBranchService;
-
     private CheckoutService checkoutService;
 
     @Autowired
@@ -41,25 +41,17 @@ public class BookRestController {
 
         System.out.println("\nWill return all books in db.");
 
-        List<Book> books = bookService.findAll();
-
-        List<BookDTO> bookDTOs = new ArrayList<>();
-
-        for(Book book : books){
-            BookDTO bookDTO = bookService.convertBookEntityToBookDTO(book);
-
-            bookDTOs.add(bookDTO);
-        }
+        List<BookDTO> bookDTOs = bookService.findAll().stream()
+                .map(bookService::convertBookEntityToBookDTO)
+                .collect(Collectors.toList());
 
         return bookDTOs;
-
     }
 
     @GetMapping("/{bookId}")
     public BookDTO getBook(@PathVariable int bookId){
 
         System.out.println("\nWill try to return book with id: " + bookId);
-
         Book book = bookService.findById(bookId);
 
         if(book == null){
@@ -69,117 +61,85 @@ public class BookRestController {
         System.out.println("\nBook with id " + bookId + " is found.");
 
         BookDTO bookDTO = bookService.convertBookEntityToBookDTO(book);
-
         return bookDTO;
-
     }
-
-    //get mapping /books/{bookId}/checkouts will be added
 
     @GetMapping("/{bookId}/authors")
     public List<AuthorDTO> getAuthorOfBook(@PathVariable int bookId){
-        System.out.println("\nWill try to find book with id " + bookId + " to return its authors.");
 
+        System.out.println("\nWill try to find book with id " + bookId + " to return its authors.");
         Book book = bookService.findById(bookId);
 
         if(book == null){
             throw new RuntimeException("Cannot return authors. Couldn't find book with id: " + bookId);
         }
         else{
-
             System.out.println("\nWill return all authors of book with id " + bookId);
 
-            List<AuthorDTO> authorsDTO = new ArrayList<>();
-
             List<Author> authors = authorService.findByBook(book);
+            List<AuthorDTO> authorDTOs = authors.stream()
+                    .map(authorService::convertAuthorEntityToAuthorDTO)
+                    .collect(Collectors.toList());
 
-            for(Author author : authors){
-                AuthorDTO authorDTO = authorService.convertAuthorEntityToAuthorDTO(author);
-                authorsDTO.add(authorDTO);
-            }
-
-            return authorsDTO;
+            return authorDTOs;
         }
-
     }
 
     @GetMapping("/{bookId}/checkouts")
     public List<CheckoutDTO> getCheckoutOfBook(@PathVariable int bookId){
-        System.out.println("\nWill try to find book with id " + bookId + " to return its checkouts.");
 
+        System.out.println("\nWill try to find book with id " + bookId + " to return its checkouts.");
         Book book = bookService.findById(bookId);
 
         if(book == null){
             throw new RuntimeException("Cannot return checkouts. Couldn't find book with id: " + bookId);
         }
         else{
-
             System.out.println("\nWill return all checkouts of book with id " + bookId);
 
-            List<CheckoutDTO> checkoutDTOs = new ArrayList<>();
             List<Checkout> checkouts = checkoutService.findByBook(book);
-//
-            for(Checkout checkout : checkouts){
-                CheckoutDTO checkoutDTO = checkoutService.convertCheckoutEntityToCheckoutDTO(checkout);
-                checkoutDTOs.add(checkoutDTO);
-            }
+            List<CheckoutDTO> checkoutDTOs = checkouts.stream()
+                    .map(checkoutService::convertCheckoutEntityToCheckoutDTO)
+                    .collect(Collectors.toList());
 
             return checkoutDTOs;
         }
-
     }
 
     @PostMapping
     public BookDTO addBook(@RequestBody BookDTO bookDTO)
     {
-
-        System.out.println("Received bookDTO: " + bookDTO);
+        System.out.println("\nWill try to add a book to the database");
 
         if(bookDTO.getLibraryBranchId() == null){
             throw new RuntimeException("Library branch id is not provided. Cannot add book.");
         }
         int libraryBranchId = bookDTO.getLibraryBranchId();
 
-        //for debug purposes
         System.out.println("\nWill try to add a book to the database under library branch with id: " + libraryBranchId + ".");
-
         LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
 
         if(libraryBranch == null){
             throw new RuntimeException("Cannot add book. Couldn't find library branch with id: " + libraryBranchId);
         }
         else{
-
             System.out.println("\nWill add the book to library branch with id " + libraryBranchId);
 
             bookDTO.setId(0);
-
             Book book = bookService.convertBookDTOToBookEntity(bookDTO);
 
-            List<Integer> authorIds = bookDTO.getAuthorIds();
             List<Author> authors = new ArrayList<>();
 
-            //author list check
-            for(int id : authorIds) {
-                Author author = authorService.findById(id);
-
-                if (author == null) {
-                    System.out.println("No author found with id: " + id + ". Will not be added to authors list.");
-                } else{
-                    System.out.println("Author find with id: " + id + ", as " + author + ".\nWill be added to authors list.");
-                    authors.add(author);
-                }
-
+            if(bookDTO.getAuthorIds() != null) {
+                authors = bookDTO.getAuthorIds().stream().map(authorService::findById)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
             }
 
-            //checkouts will be assigned by adding a checkout. Not from post book.
-
             Book bookInDB = bookService.setFieldsAndSaveBook(book, libraryBranch, authors);
-
             System.out.println("Saved book: " + bookInDB);
 
             BookDTO returnBookDTO = bookService.convertBookEntityToBookDTO(bookInDB);
-
             return returnBookDTO;
         }
 
@@ -190,9 +150,7 @@ public class BookRestController {
 
         System.out.println("\nWill try to update a book from database.");
 
-        //library branch check
         Integer libraryBranchId = bookDTO.getLibraryBranchId();
-
         LibraryBranch libraryBranch = null;
 
         if(libraryBranchId != null){
@@ -201,12 +159,11 @@ public class BookRestController {
             if(libraryBranch == null){
                 throw new RuntimeException("Cannot update/add book. Couldn't find library branch with id: " + libraryBranchId);
             }
-
         }
 
         Book book = new Book();
-        //if book exists or not check
-        if(bookDTO.getId() != null){
+
+        if(bookDTO.getId() != 0){
             book = bookService.findById(bookDTO.getId());
 
             if(book == null){
@@ -218,37 +175,23 @@ public class BookRestController {
         }
 
         book = bookService.updateBookPartially(book, bookDTO);
-
         Book bookInDB = new Book();
 
-        //author checks
         if(bookDTO.getAuthorIds() != null){
-            List<Integer> authorIds = bookDTO.getAuthorIds();
-            List<Author> authors = new ArrayList<>();
+            List<Author> authors = bookDTO.getAuthorIds().stream()
+                    .map(authorService::findById)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
 
-            //author list check
-            for(int id : authorIds) {
-                Author author = authorService.findById(id);
-
-                if (author == null) {
-                    System.out.println("No author found with id: " + id + ". Will not be added to authors list.");
-                } else{
-                    System.out.println("Author find with id: " + id + ", as " + author + ".\nWill be added to authors list.");
-                    authors.add(author);
-                }
-
-            }
             bookInDB = bookService.setFieldsAndSaveBook(book, libraryBranch, authors);
         }
         else{
             bookInDB = bookService.setFieldsAndSaveBook(book, libraryBranch, null);
         }
 
-        //checkouts will be assigned by adding a checkout. Not from post/put book.
         System.out.println("Saved book: " + bookInDB);
 
         BookDTO returnBookDTO = bookService.convertBookEntityToBookDTO(bookInDB);
-
         return returnBookDTO;
     }
 
@@ -262,7 +205,6 @@ public class BookRestController {
         }
 
         bookService.deleteById(bookId);
-
         System.out.println("\nBook with id " + bookId + " is deleted.");
 
         return "Deleted book id: " + bookId;

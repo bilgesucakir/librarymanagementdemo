@@ -6,10 +6,7 @@ import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.example.librarymanagementdemo.repository.LibraryUserRepository;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class LibraryUserServiceImp implements LibraryUserService{
+
 
     private LibraryUserRepository libraryUserRepository;
 
@@ -105,9 +103,19 @@ public class LibraryUserServiceImp implements LibraryUserService{
             libraryUser.setUsername(libraryUserDTO.getUsername());
         }
         if(libraryUserDTO.getRegistrationDate() != null){
-            libraryUser.setRegistrationDate(libraryUser.getRegistrationDate());
+            libraryUser.setRegistrationDate(libraryUserDTO.getRegistrationDate());
         }
 
         return libraryUser;
+    }
+
+    @Override
+    public boolean libraryUserExistsWithUsernameOrNot(String username) {
+        return libraryUserRepository.existsLibraryUserByUsernameEquals(username);
+    }
+
+    @Override
+    public boolean libraryUserExistsWithEmailOrNot(String email) {
+        return libraryUserRepository.existsLibraryUserByEmailEquals(email);
     }
 }

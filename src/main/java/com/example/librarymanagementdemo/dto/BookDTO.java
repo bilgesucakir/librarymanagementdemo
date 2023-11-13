@@ -9,7 +9,7 @@ import java.util.List;
 public class BookDTO {
 
 
-    private Integer id;
+    private int id;
 
     private String title;
 
@@ -27,11 +27,11 @@ public class BookDTO {
     private List<Integer> authorIds;
     private List<Integer> checkoutIds;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

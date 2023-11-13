@@ -28,8 +28,7 @@ public class LibraryBranch {
     //librarybranch-book relationship
     @OneToMany(mappedBy = "libraryBranch",
     fetch = FetchType.LAZY,
-    cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH})
+    cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Book> books;
 

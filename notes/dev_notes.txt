@@ -1,5 +1,3 @@
-post put delete should be tried out considering the relationships among entities, if not working correctly, change cascade types
-
 exception handling
 
 error responses
@@ -10,26 +8,23 @@ use of bcrypt? - research for other crypt options suitable
 
 maybe frontend can be started with angular later on (as a separate project or addition to this one)
 
-
-
-3.11.2023 notes
-
-check for relations - update, delete situations
--book author checked
--librarybranch book checked (deletion of library branch should be checked)
--checkout relations remain,
-
-
-dto implementations -> libraryuser put, checkout controller, library branch controller and service remain
-author->ok
-book->ok
-
-
 filtering -> book,libraryuser,librarybranch,checkout remain
 author->ok
+(can be excluded from checkout for now)
 
+mapper classes (entity-dto mapping can be moved there, but what about partial update)
 
 after all of these finished, transforming return types to response entity can be done
 
+
+
+book cannot be deleted until checkout is deleted - should delete checkout before deleting the book - cascade.type remove
+lu finished, lb
+
+
+book id cannot be updated with add library branch and update library branch
+
+
+save edilen luserın checkoutsı empty list mi kontrol et
 
 

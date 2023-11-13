@@ -9,18 +9,17 @@ import java.util.List;
 
 public interface LibraryBranchService {
 
-
     List<LibraryBranch> findAll();
 
     LibraryBranch findById(int id);
 
     LibraryBranch save(LibraryBranch libraryBranch);
 
+    LibraryBranch setBooksOfLibraryBranch(LibraryBranch libraryBranch, List<Book> books);
+
+    LibraryBranch setBooksAndSaveLibraryBranch(LibraryBranch libraryBranch, List<Book> books);
+
     void deleteById(int id);
-
-    LibraryBranch findByBookId(int bookId); //will be added
-
-    //
 
     LibraryBranch convertLibraryBranchDTOToLibraryBranchEntity(LibraryBranchDTO dto);
 

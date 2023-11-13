@@ -30,12 +30,11 @@ public class AuthorServiceImp implements AuthorService{
 
     private EntityManager entityManager;
 
-    @Autowired //for auto dependency injection --> constructor injeciton
+    @Autowired //for auto dependency injection --> constructor injection
     public AuthorServiceImp(AuthorRepository authorRepository, EntityManager entityManager) {
         this.authorRepository = authorRepository;
         this.entityManager = entityManager;
     }
-
 
     @Override
     public List<Author> findAll() {
@@ -54,7 +53,6 @@ public class AuthorServiceImp implements AuthorService{
 
         return author;
     }
-
 
     @Override
     public Author save(Author author) {
@@ -169,7 +167,7 @@ public class AuthorServiceImp implements AuthorService{
     public Author setBooksAndSaveAuthor(Author author, List<Book> books) {
         Author tempAuthor = author;
 
-        if(books != null && books.size() > 0){
+        if(books != null){
             tempAuthor = setBooksOfAuthor(tempAuthor, books);
         }
 

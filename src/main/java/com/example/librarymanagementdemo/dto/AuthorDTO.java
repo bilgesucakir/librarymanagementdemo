@@ -14,7 +14,7 @@ import java.util.List;
 public class AuthorDTO {
 
 
-    private Integer id;
+    private int id;
     private String name;
     private String biography;
 
@@ -23,11 +23,11 @@ public class AuthorDTO {
     private String nationality;
     private List<Integer> bookIds;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

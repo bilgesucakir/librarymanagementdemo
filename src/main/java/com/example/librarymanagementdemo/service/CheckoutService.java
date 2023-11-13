@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface CheckoutService {
 
-
     List<Checkout> findAll();
 
     Checkout findById(int id);

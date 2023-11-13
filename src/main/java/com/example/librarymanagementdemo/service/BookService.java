@@ -34,6 +34,5 @@ public interface BookService {
 
     BookDTO convertBookEntityToBookDTO(Book book);
 
-
     Book updateBookPartially(Book book, BookDTO bookDTO);
 }

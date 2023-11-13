@@ -24,7 +24,7 @@ CREATE TABLE `book` (
     `genre` VARCHAR(50),
     `availability_status` BOOLEAN NOT NULL,
     `multiple_author` BOOLEAN,
-    `library_branch_id` INT NOT NULL,
+    `library_branch_id` INT,
     CONSTRAINT `constraint5` FOREIGN KEY (`library_branch_id`) REFERENCES `librarybranch` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
@@ -47,8 +47,8 @@ CREATE TABLE `book_author` (
 -- Create the 'Checkout' table
 CREATE TABLE `checkout` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `checked_out_date` DATE,
-    `due_date` DATE,
+    `checked_out_date` TIMESTAMP,
+    `due_date` TIMESTAMP,
     `book_id` INT NOT NULL,
     `user_id` INT NOT NULL,
     CONSTRAINT `constraint3` FOREIGN KEY (`book_id`) REFERENCES `book` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,

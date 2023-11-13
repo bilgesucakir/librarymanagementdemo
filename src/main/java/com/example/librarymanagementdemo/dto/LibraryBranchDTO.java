@@ -11,13 +11,9 @@ import java.util.List;
 public class LibraryBranchDTO {
 
     private int id;
-
     private String name;
-
     private String location;
-
-    private int capacity;
-    private LibraryBranch libraryBranch;
+    private Integer capacity;
     private List<Integer> bookIds;
 
     public int getId() {
@@ -44,20 +40,12 @@ public class LibraryBranchDTO {
         this.location = location;
     }
 
-    public int getCapacity() {
+    public Integer getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
+    public void setCapacity(Integer capacity) {
         this.capacity = capacity;
-    }
-
-    public LibraryBranch getLibraryBranch() {
-        return libraryBranch;
-    }
-
-    public void setLibraryBranch(LibraryBranch libraryBranch) {
-        this.libraryBranch = libraryBranch;
     }
 
     public List<Integer> getBookIds() {
@@ -77,7 +65,6 @@ public class LibraryBranchDTO {
                 ", name='" + name + '\'' +
                 ", location='" + location + '\'' +
                 ", capacity=" + capacity +
-                ", libraryBranch=" + libraryBranch +
                 ", bookIds=" + bookIds +
                 '}';
     }
