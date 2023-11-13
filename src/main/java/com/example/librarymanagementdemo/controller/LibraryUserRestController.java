@@ -43,8 +43,6 @@ public class LibraryUserRestController {
     @GetMapping("/{libraryUserId}")
     public LibraryUserDTO getLibraryUser(@PathVariable int libraryUserId){
 
-        System.out.println("\nWill try to return library branch with id: " + libraryUserId);
-
         LibraryUser libraryUser = libraryUserService.findById(libraryUserId);
 
         if(libraryUser == null){
@@ -58,8 +56,6 @@ public class LibraryUserRestController {
 
     @GetMapping("/{libraryUserId}/checkouts")
     public List<CheckoutDTO> getCheckoutOfLibraryUser(@PathVariable int libraryUserId){
-
-        System.out.println("\nWill try to find library user with id " + libraryUserId + " to return its checkouts.");
 
         LibraryUser libraryUser = libraryUserService.findById(libraryUserId);
 
@@ -79,8 +75,6 @@ public class LibraryUserRestController {
 
     @PostMapping
     public LibraryUserDTO addLibraryUser(@RequestBody LibraryUserDTO libraryUserDTO) {
-
-        System.out.println("\nWill add a library user to the database.");
 
         //username and email checks
         if(libraryUserDTO.getUsername() == null){
@@ -133,8 +127,6 @@ public class LibraryUserRestController {
     @PutMapping
     public LibraryUserDTO updateLibraryUser(@RequestBody LibraryUserDTO libraryUserDTO) {
 
-        System.out.println("\nWill try to update a library user from database.");
-
         LibraryUser libraryUser = new LibraryUser();
 
         if(libraryUserDTO.getId() != 0){
@@ -147,9 +139,6 @@ public class LibraryUserRestController {
             if(libraryUserDTO.getUsername() != null && !libraryUserDTO.getUsername().equals(libraryUser.getUsername()) ){ //username change
                 String usernameInput = libraryUserDTO.getUsername();
 
-                System.out.println("should not be here");
-
-
                 if(libraryUserService.libraryUserExistsWithUsernameOrNot(usernameInput)){
                     throw new RuntimeException("Cannot add libaryuser. Given username \""
                             + usernameInput + "\" already exists in database.");
@@ -161,7 +150,6 @@ public class LibraryUserRestController {
                     }
                 }
             }
-
             if(libraryUserDTO.getEmail() != null && !libraryUserDTO.getEmail().equals(libraryUser.getEmail())){ //email change
                 String emailInput = libraryUserDTO.getEmail();
 

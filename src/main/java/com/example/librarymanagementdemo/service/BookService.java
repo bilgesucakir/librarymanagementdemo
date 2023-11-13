@@ -22,9 +22,9 @@ public interface BookService {
 
     List<Book> findByLibraryBranch(LibraryBranch libraryBranch);
 
-    Book setLibraryBranchOfBook(Book book, LibraryBranch libraryBranch);
+    List<Book> findByFilter(String title, String isbn, Integer publicationYear, String genre, String available, String multipleAuthors);
 
-    Book setCheckoutsOfBook(Book book, List<Checkout> checkouts);
+    Book setLibraryBranchOfBook(Book book, LibraryBranch libraryBranch);
 
     Book setAuthorsOfBook(Book book, List<Author> authors);
 
@@ -35,4 +35,5 @@ public interface BookService {
     BookDTO convertBookEntityToBookDTO(Book book);
 
     Book updateBookPartially(Book book, BookDTO bookDTO);
+
 }

@@ -13,6 +13,8 @@ public interface LibraryBranchService {
 
     LibraryBranch findById(int id);
 
+    List<LibraryBranch> findByFilter(String name, String location, Integer capacity);
+
     LibraryBranch save(LibraryBranch libraryBranch);
 
     LibraryBranch setBooksOfLibraryBranch(LibraryBranch libraryBranch, List<Book> books);

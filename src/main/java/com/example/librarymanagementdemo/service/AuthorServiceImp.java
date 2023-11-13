@@ -30,7 +30,7 @@ public class AuthorServiceImp implements AuthorService{
 
     private EntityManager entityManager;
 
-    @Autowired //for auto dependency injection --> constructor injection
+    @Autowired
     public AuthorServiceImp(AuthorRepository authorRepository, EntityManager entityManager) {
         this.authorRepository = authorRepository;
         this.entityManager = entityManager;
@@ -76,30 +76,24 @@ public class AuthorServiceImp implements AuthorService{
         CriteriaQuery<Author> query = builder.createQuery(Author.class);
         Root<Author> root = query.from(Author.class);
 
-        // Create a list to hold the predicates
         List<Predicate> predicates = new ArrayList<>();
 
-        // Add predicates based on the parameters
         if (name != null) {
             predicates.add(builder.equal(root.get("name"), name));
         }
-
         if (birthdate != null) {
             predicates.add(builder.equal(root.get("birthdate"), birthdate));
         }
-
         if (nationality != null) {
             predicates.add(builder.equal(root.get("nationality"), nationality));
         }
 
-        // Combine the predicates with AND
+
         if (!predicates.isEmpty()) {
             query.where(builder.and(predicates.toArray(new Predicate[0])));
         }
 
-        // Create a TypedQuery
         TypedQuery<Author> typedQuery = entityManager.createQuery(query);
-
         return typedQuery.getResultList();
     }
 

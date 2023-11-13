@@ -45,7 +45,6 @@ public class CheckoutRestController {
     @GetMapping("/{checkoutId}")
     public CheckoutDTO getCheckout(@PathVariable int checkoutId){
 
-        System.out.println("\nWill try to return checkout with id: " + checkoutId);
         Checkout checkout = checkoutService.findById(checkoutId);
 
         if(checkout == null){
@@ -60,11 +59,6 @@ public class CheckoutRestController {
 
     @PostMapping
     public CheckoutDTO addCheckout(@RequestBody CheckoutDTO checkoutDTO) {
-        System.out.println(checkoutDTO.getCheckedOutDate());
-
-        //for debug purposes
-        System.out.println("\nWill try to add a checkout to the database.");
-
         //check if book and user id exists in request body
         if(checkoutDTO.getUserId() == null){
             throw new RuntimeException("User id is not provided. Cannot add checkout.");
@@ -76,7 +70,6 @@ public class CheckoutRestController {
         //check if given user and book id exists in database
         int userId = checkoutDTO.getUserId();
         int bookId = checkoutDTO.getBookId();
-        System.out.println("\nWill try to add a checkout to the database with user id: " + userId + " and book id: " + bookId + ".");
 
         Book book = bookService.findById(bookId);
         LibraryUser libraryUser = libraryUserService.findById(userId);
@@ -92,7 +85,7 @@ public class CheckoutRestController {
             Checkout checkout = checkoutService.convertCheckoutDTOToCheckoutEntity(checkoutDTO);
 
             Checkout checkoutInDB = checkoutService.setFieldsAndSaveCheckout(checkout, book, libraryUser);
-            System.out.println("Saved checkout: " + checkoutInDB);
+            System.out.println("Saved checkout: " + checkoutInDB + " with user id: " + userId + " and book id: " + bookId );
 
             CheckoutDTO returnCheckoutDTO = checkoutService.convertCheckoutEntityToCheckoutDTO(checkoutInDB);
             return returnCheckoutDTO;
@@ -101,8 +94,6 @@ public class CheckoutRestController {
 
     @PutMapping
     public CheckoutDTO updateCheckout(@RequestBody CheckoutDTO checkoutDTO) {
-
-        System.out.println("\nWill try to update a checkout from database.");
 
         Checkout checkout = new Checkout();
         int checkoutId = checkoutDTO.getId();

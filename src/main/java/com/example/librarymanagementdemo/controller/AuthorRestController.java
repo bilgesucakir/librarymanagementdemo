@@ -30,7 +30,7 @@ public class AuthorRestController {
     }
 
     @GetMapping
-    public List<AuthorDTO> findAllOrFilter(
+    public List<AuthorDTO> findAllWithOptionalFilter(
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "birthdate", required = false) Date birthdate,
             @RequestParam(name = "nationality", required = false) String nationality
@@ -46,16 +46,7 @@ public class AuthorRestController {
         }
         else{//some filtering exists
 
-            System.out.print("\nWill return all authors in db with following filters: ");
-            if(name!= null){
-                System.out.print("name=" + name+ " ");
-            }
-            if(birthdate!= null){
-                System.out.print("birthdate=" + birthdate+ " ");
-            }
-            if(nationality!= null){
-                System.out.print("nationality=" + nationality);
-            }
+            System.out.print("\nWill return all authors in db with filtering.");
 
             authors =  authorService.findByFilter(name, birthdate, nationality);
         }
@@ -69,8 +60,6 @@ public class AuthorRestController {
 
     @GetMapping("/{authorId}")
     public AuthorDTO getAuthor(@PathVariable int authorId){
-
-        System.out.println("\nWill try to return author with id: " + authorId);
 
         Author author = authorService.findById(authorId);
 
@@ -86,7 +75,6 @@ public class AuthorRestController {
 
     @GetMapping("/{authorId}/books")
     public List<BookDTO> getBookOfAuthor(@PathVariable int authorId){ //comes from url
-        System.out.println("\nWill try to find author with id " + authorId + " to return its books.");
 
         Author author = authorService.findById(authorId);
 
@@ -109,9 +97,6 @@ public class AuthorRestController {
     @PostMapping
     public AuthorDTO addAuthor(@RequestBody AuthorDTO authorDTO) { //get entity params from body
 
-        //for debug purposes
-        System.out.println("\nWill add an author to the database.");
-
         authorDTO.setId(0);
         Author author = authorService.convertAuthorDTOToAuthorEntity(authorDTO);
 
@@ -124,7 +109,7 @@ public class AuthorRestController {
 
         Author authorInDB = authorService.setBooksAndSaveAuthor(author, books);
 
-        //System.out.println("Saved author: " + authorInDB);
+        System.out.println("Saved author: " + authorInDB);
 
         AuthorDTO returnAuthorDTO = authorService.convertAuthorEntityToAuthorDTO(authorInDB);
         return returnAuthorDTO;
@@ -132,8 +117,6 @@ public class AuthorRestController {
 
     @PutMapping
     public AuthorDTO updateAuthor(@RequestBody AuthorDTO authorDTO) {
-
-        System.out.println("\nWill try to update an author from database.");
 
         Author author = new Author();
         //if author exists or not

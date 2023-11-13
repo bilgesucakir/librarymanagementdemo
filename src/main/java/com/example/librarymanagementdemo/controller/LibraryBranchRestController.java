@@ -29,11 +29,23 @@ public class LibraryBranchRestController {
     }
 
     @GetMapping
-    public List<LibraryBranchDTO> findAll() {
+    public List<LibraryBranchDTO> findAllWithOptionalFilter(
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "location", required = false) String location,
+            @RequestParam(name = "capacity", required = false) Integer capacity
+    ){
+        List<LibraryBranch> libraryBranches = new ArrayList<>();
+        if(name == null && location == null && capacity == null){
 
-        System.out.println("\nWill return all branches in db.");
+            System.out.println("\nWill return all branches in db.");
+            libraryBranches = libraryBranchService.findAll();
+        }
+        else{
+            System.out.print("\nWill return all librarybranches in db with filtering.");
+            libraryBranches = libraryBranchService.findByFilter(name, location, capacity);
+        }
 
-        List<LibraryBranchDTO> libraryBranchDTOs = libraryBranchService.findAll().stream()
+        List<LibraryBranchDTO> libraryBranchDTOs = libraryBranches.stream()
                 .map(libraryBranchService::convertLibraryBranchEntityToLibraryBranchDTO)
                 .collect(Collectors.toList());
 
@@ -42,8 +54,6 @@ public class LibraryBranchRestController {
 
     @GetMapping("/{libraryBranchId}")
     public LibraryBranchDTO getLibraryBranch(@PathVariable int libraryBranchId) {
-
-        System.out.println("\nWill try to return library branch with id: " + libraryBranchId);
 
         LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
 
@@ -59,7 +69,6 @@ public class LibraryBranchRestController {
 
     @GetMapping("/{libraryBranchId}/books")
     public List<BookDTO> getBookOfLibraryBranch(@PathVariable int libraryBranchId){
-        System.out.println("\nWill try to find library branch with id " + libraryBranchId + " to return its books.");
 
         LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
 
@@ -80,9 +89,6 @@ public class LibraryBranchRestController {
 
     @PostMapping
     public LibraryBranchDTO addLibraryBranch(@RequestBody LibraryBranchDTO libraryBranchDTO) {
-
-        //for debug purposes
-        System.out.println("\nWill add a library branch to the database.");
 
         libraryBranchDTO.setId(0); //to force a save of new item
         List<Book> books = new ArrayList<>();
@@ -105,8 +111,6 @@ public class LibraryBranchRestController {
 
     @PutMapping
     public LibraryBranchDTO updateLibraryBranch(@RequestBody LibraryBranchDTO libraryBranchDTO) {
-
-        System.out.println("\nWill try to update a library branch from database.");
 
         LibraryBranch libraryBranch = new LibraryBranch();
         if(libraryBranchDTO.getId() != 0){

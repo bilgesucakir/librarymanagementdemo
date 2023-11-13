@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -37,11 +38,28 @@ public class BookRestController {
     }
 
     @GetMapping
-    public List<BookDTO> findAll(){
+    public List<BookDTO> findAllWithOptionalFilter(
+            @RequestParam(name = "title", required = false) String title,
+            @RequestParam(name = "isbn", required = false) String ISBN,
+            @RequestParam(name = "publicationYear", required = false) Integer publicationYear,
+            @RequestParam(name = "genre", required = false) String genre,
+            @RequestParam(name = "available", required = false) String available,
+            @RequestParam(name = "multipleAuthors", required = false) String multipleAuthors
+    ){
+        List<Book> books = new ArrayList<>();
+        if(title == null && ISBN == null
+                && publicationYear == null && genre == null
+                && available == null && multipleAuthors == null){
 
-        System.out.println("\nWill return all books in db.");
+            System.out.println("\nWill return all books in db.");
+            books = bookService.findAll();
+        }
+        else{
+            System.out.print("\nWill return all books in db with filtering.");
+            books = bookService.findByFilter(title, ISBN, publicationYear, genre, available, multipleAuthors);
+        }
 
-        List<BookDTO> bookDTOs = bookService.findAll().stream()
+        List<BookDTO> bookDTOs = books.stream()
                 .map(bookService::convertBookEntityToBookDTO)
                 .collect(Collectors.toList());
 
@@ -51,7 +69,6 @@ public class BookRestController {
     @GetMapping("/{bookId}")
     public BookDTO getBook(@PathVariable int bookId){
 
-        System.out.println("\nWill try to return book with id: " + bookId);
         Book book = bookService.findById(bookId);
 
         if(book == null){
@@ -67,7 +84,6 @@ public class BookRestController {
     @GetMapping("/{bookId}/authors")
     public List<AuthorDTO> getAuthorOfBook(@PathVariable int bookId){
 
-        System.out.println("\nWill try to find book with id " + bookId + " to return its authors.");
         Book book = bookService.findById(bookId);
 
         if(book == null){
@@ -88,7 +104,6 @@ public class BookRestController {
     @GetMapping("/{bookId}/checkouts")
     public List<CheckoutDTO> getCheckoutOfBook(@PathVariable int bookId){
 
-        System.out.println("\nWill try to find book with id " + bookId + " to return its checkouts.");
         Book book = bookService.findById(bookId);
 
         if(book == null){
@@ -109,22 +124,17 @@ public class BookRestController {
     @PostMapping
     public BookDTO addBook(@RequestBody BookDTO bookDTO)
     {
-        System.out.println("\nWill try to add a book to the database");
-
         if(bookDTO.getLibraryBranchId() == null){
             throw new RuntimeException("Library branch id is not provided. Cannot add book.");
         }
         int libraryBranchId = bookDTO.getLibraryBranchId();
 
-        System.out.println("\nWill try to add a book to the database under library branch with id: " + libraryBranchId + ".");
         LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
 
         if(libraryBranch == null){
             throw new RuntimeException("Cannot add book. Couldn't find library branch with id: " + libraryBranchId);
         }
         else{
-            System.out.println("\nWill add the book to library branch with id " + libraryBranchId);
-
             bookDTO.setId(0);
             Book book = bookService.convertBookDTOToBookEntity(bookDTO);
 
@@ -137,7 +147,7 @@ public class BookRestController {
             }
 
             Book bookInDB = bookService.setFieldsAndSaveBook(book, libraryBranch, authors);
-            System.out.println("Saved book: " + bookInDB);
+            System.out.println("Saved book: " + bookInDB + " under library branch with id: " + libraryBranchId);
 
             BookDTO returnBookDTO = bookService.convertBookEntityToBookDTO(bookInDB);
             return returnBookDTO;
@@ -147,8 +157,6 @@ public class BookRestController {
 
     @PutMapping
     public BookDTO updateBook(@RequestBody BookDTO bookDTO) {
-
-        System.out.println("\nWill try to update a book from database.");
 
         Integer libraryBranchId = bookDTO.getLibraryBranchId();
         LibraryBranch libraryBranch = null;
