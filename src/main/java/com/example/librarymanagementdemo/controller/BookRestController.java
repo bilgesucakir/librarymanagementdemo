@@ -12,6 +12,8 @@ import com.example.librarymanagementdemo.service.BookService;
 import com.example.librarymanagementdemo.service.CheckoutService;
 import com.example.librarymanagementdemo.service.LibraryBranchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -37,7 +39,7 @@ public class BookRestController {
     }
 
     @GetMapping
-    public List<BookDTO> findAllWithOptionalFilter(
+    public ResponseEntity<List<BookDTO>> findAllWithOptionalFilter(
             @RequestParam(name = "title", required = false) String title,
             @RequestParam(name = "isbn", required = false) String ISBN,
             @RequestParam(name = "publicationYear", required = false) Integer publicationYear,
@@ -62,11 +64,11 @@ public class BookRestController {
                 .map(bookService::convertBookEntityToBookDTO)
                 .collect(Collectors.toList());
 
-        return bookDTOs;
+        return new ResponseEntity<>(bookDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/{bookId}")
-    public BookDTO getBook(@PathVariable int bookId){
+    public ResponseEntity<BookDTO> getBook(@PathVariable int bookId){
 
         Book book = bookService.findById(bookId);
 
@@ -77,11 +79,11 @@ public class BookRestController {
         System.out.println("\nBook with id " + bookId + " is found.");
 
         BookDTO bookDTO = bookService.convertBookEntityToBookDTO(book);
-        return bookDTO;
+        return new ResponseEntity<>(bookDTO, HttpStatus.OK);
     }
 
     @GetMapping("/{bookId}/authors")
-    public List<AuthorDTO> getAuthorOfBook(@PathVariable int bookId){
+    public ResponseEntity<List<AuthorDTO>> getAuthorOfBook(@PathVariable int bookId){
 
         Book book = bookService.findById(bookId);
 
@@ -96,12 +98,12 @@ public class BookRestController {
                     .map(authorService::convertAuthorEntityToAuthorDTO)
                     .collect(Collectors.toList());
 
-            return authorDTOs;
+            return new ResponseEntity<>(authorDTOs, HttpStatus.OK);
         }
     }
 
     @GetMapping("/{bookId}/checkouts")
-    public List<CheckoutDTO> getCheckoutOfBook(@PathVariable int bookId){
+    public ResponseEntity<List<CheckoutDTO>> getCheckoutOfBook(@PathVariable int bookId){
 
         Book book = bookService.findById(bookId);
 
@@ -116,12 +118,12 @@ public class BookRestController {
                     .map(checkoutService::convertCheckoutEntityToCheckoutDTO)
                     .collect(Collectors.toList());
 
-            return checkoutDTOs;
+            return new ResponseEntity<>(checkoutDTOs, HttpStatus.OK);
         }
     }
 
     @PostMapping
-    public BookDTO addBook(@RequestBody BookDTO bookDTO)
+    public ResponseEntity<BookDTO> addBook(@RequestBody BookDTO bookDTO)
     {
         if(bookDTO.getLibraryBranchId() == null){
             throw new RuntimeException("Library branch id is not provided. Cannot add book.");
@@ -149,13 +151,13 @@ public class BookRestController {
             System.out.println("Saved book: " + bookInDB + " under library branch with id: " + libraryBranchId);
 
             BookDTO returnBookDTO = bookService.convertBookEntityToBookDTO(bookInDB);
-            return returnBookDTO;
+            return new ResponseEntity<>(returnBookDTO, HttpStatus.OK);
         }
 
     }
 
     @PutMapping
-    public BookDTO updateBook(@RequestBody BookDTO bookDTO) {
+    public ResponseEntity<BookDTO> updateBook(@RequestBody BookDTO bookDTO) {
 
         Integer libraryBranchId = bookDTO.getLibraryBranchId();
         LibraryBranch libraryBranch = null;
@@ -199,11 +201,11 @@ public class BookRestController {
         System.out.println("Saved book: " + bookInDB);
 
         BookDTO returnBookDTO = bookService.convertBookEntityToBookDTO(bookInDB);
-        return returnBookDTO;
+        return new ResponseEntity<>(returnBookDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{bookId}")
-    public String deleteBook(@PathVariable int bookId) {
+    public ResponseEntity<String> deleteBook(@PathVariable int bookId) {
 
         Book tempBook = bookService.findById(bookId);
 
@@ -214,6 +216,6 @@ public class BookRestController {
         bookService.deleteById(bookId);
         System.out.println("\nBook with id " + bookId + " is deleted.");
 
-        return "Deleted book id: " + bookId;
+        return new ResponseEntity<>("Deleted book id: " + bookId, HttpStatus.OK);
     }
 }

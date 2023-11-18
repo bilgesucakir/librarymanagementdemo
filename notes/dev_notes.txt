@@ -1,3 +1,4 @@
+***TO DO***
 exception handling
 
 error responses
@@ -10,7 +11,8 @@ maybe frontend can be started with angular later on (as a separate project or ad
 
 mapper classes (entity-dto mapping can be moved there, but what about partial update)
 
-after all of these finished, transforming return types to response entity can be done
+***NOTES***
+author tested for response entity return type, other 4 entities should be tested
 
 
 

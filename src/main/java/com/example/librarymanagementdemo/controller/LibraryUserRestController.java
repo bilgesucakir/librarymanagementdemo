@@ -6,6 +6,9 @@ import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.example.librarymanagementdemo.service.CheckoutService;
 import com.example.librarymanagementdemo.service.LibraryUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +29,7 @@ public class LibraryUserRestController {
     }
 
     @GetMapping
-    public List<LibraryUserDTO> findAll(){
+    public ResponseEntity<List<LibraryUserDTO>> findAll(){
 
         System.out.println("\nWill return all users in db.");
 
@@ -34,11 +37,11 @@ public class LibraryUserRestController {
                 .map(libraryUserService::convertLibraryUserEntityTolibraryUserDTO)
                 .collect(Collectors.toList());
 
-        return libraryUserDTOs;
+        return new ResponseEntity<>(libraryUserDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/{libraryUserId}")
-    public LibraryUserDTO getLibraryUser(@PathVariable int libraryUserId){
+    public ResponseEntity<LibraryUserDTO> getLibraryUser(@PathVariable int libraryUserId){
 
         LibraryUser libraryUser = libraryUserService.findById(libraryUserId);
 
@@ -48,11 +51,11 @@ public class LibraryUserRestController {
         System.out.println("\nLibrary user with id " + libraryUserId + " is found.");
 
         LibraryUserDTO libraryUserDTO = libraryUserService.convertLibraryUserEntityTolibraryUserDTO(libraryUser);
-        return libraryUserDTO;
+        return new ResponseEntity<>(libraryUserDTO, HttpStatus.OK);
     }
 
     @GetMapping("/{libraryUserId}/checkouts")
-    public List<CheckoutDTO> getCheckoutOfLibraryUser(@PathVariable int libraryUserId){
+    public ResponseEntity<List<CheckoutDTO>> getCheckoutOfLibraryUser(@PathVariable int libraryUserId){
 
         LibraryUser libraryUser = libraryUserService.findById(libraryUserId);
 
@@ -66,12 +69,12 @@ public class LibraryUserRestController {
                     .map(checkoutService::convertCheckoutEntityToCheckoutDTO)
                     .collect(Collectors.toList());
 
-            return checkoutDTOs;
+            return new ResponseEntity<>(checkoutDTOs, HttpStatus.OK);
         }
     }
 
     @PostMapping
-    public LibraryUserDTO addLibraryUser(@RequestBody LibraryUserDTO libraryUserDTO) {
+    public ResponseEntity<LibraryUserDTO> addLibraryUser(@RequestBody LibraryUserDTO libraryUserDTO) {
 
         //username and email checks
         if(libraryUserDTO.getUsername() == null){
@@ -118,11 +121,11 @@ public class LibraryUserRestController {
         System.out.println("Saved library user: " + userInDB);
 
         LibraryUserDTO returnLibraryUserDTO = libraryUserService.convertLibraryUserEntityTolibraryUserDTO(userInDB);
-        return returnLibraryUserDTO;
+        return new ResponseEntity<>(returnLibraryUserDTO, HttpStatus.OK);
     }
 
     @PutMapping
-    public LibraryUserDTO updateLibraryUser(@RequestBody LibraryUserDTO libraryUserDTO) {
+    public ResponseEntity<LibraryUserDTO> updateLibraryUser(@RequestBody LibraryUserDTO libraryUserDTO) {
 
         LibraryUser libraryUser = new LibraryUser();
 
@@ -213,11 +216,11 @@ public class LibraryUserRestController {
         System.out.println("Saved/updated book: " + libraryUserInDB);
         LibraryUserDTO returnLibraryUserDTO = libraryUserService.convertLibraryUserEntityTolibraryUserDTO(libraryUserInDB);
 
-        return returnLibraryUserDTO;
+        return new ResponseEntity<>(returnLibraryUserDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{libraryUserId}")
-    public String deleteLibraryUser(@PathVariable int libraryUserId) {
+    public ResponseEntity<String> deleteLibraryUser(@PathVariable int libraryUserId) {
 
         LibraryUser tempLibraryUser = libraryUserService.findById(libraryUserId);
 
@@ -228,6 +231,6 @@ public class LibraryUserRestController {
         libraryUserService.deleteById(libraryUserId);
         System.out.println("\nLibrary user with id " + libraryUserId + " is deleted.");
 
-        return "Deleted library user id: " + libraryUserId;
+        return new ResponseEntity<>("Deleted library user id: " + libraryUserId, HttpStatus.OK);
     }
 }

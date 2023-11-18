@@ -7,6 +7,8 @@ import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.service.AuthorService;
 import com.example.librarymanagementdemo.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ public class AuthorRestController {
     }
 
     @GetMapping
-    public List<AuthorDTO> findAllWithOptionalFilter(
+    public ResponseEntity<List<AuthorDTO>> findAllWithOptionalFilter(
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "birthdate", required = false) Date birthdate,
             @RequestParam(name = "nationality", required = false) String nationality
@@ -37,16 +39,13 @@ public class AuthorRestController {
         List<Author> authors = new ArrayList<>();
 
         if(name == null && birthdate == null && nationality == null){
-            //no filtering, calling findAll
 
             System.out.println("\nWill return all authors in db.");
-
             authors =  authorService.findAll();
         }
         else{//some filtering exists
 
             System.out.print("\nWill return all authors in db with filtering.");
-
             authors =  authorService.findByFilter(name, birthdate, nationality);
         }
 
@@ -54,11 +53,11 @@ public class AuthorRestController {
                 .map(authorService::convertAuthorEntityToAuthorDTO)
                 .collect(Collectors.toList());
 
-        return authorDTOs;
+        return new ResponseEntity<>(authorDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/{authorId}")
-    public AuthorDTO getAuthor(@PathVariable int authorId){
+    public ResponseEntity<AuthorDTO> getAuthor(@PathVariable int authorId){
 
         Author author = authorService.findById(authorId);
 
@@ -69,11 +68,11 @@ public class AuthorRestController {
         System.out.println("\nAuthor with id " + authorId + " is found.");
 
         AuthorDTO authorDTO = authorService.convertAuthorEntityToAuthorDTO(author);
-        return authorDTO;
+        return new ResponseEntity<>(authorDTO, HttpStatus.OK);
     }
 
     @GetMapping("/{authorId}/books")
-    public List<BookDTO> getBookOfAuthor(@PathVariable int authorId){ //comes from url
+    public ResponseEntity<List<BookDTO>> getBookOfAuthor(@PathVariable int authorId){ //comes from url
 
         Author author = authorService.findById(authorId);
 
@@ -89,12 +88,12 @@ public class AuthorRestController {
                     .map(bookService::convertBookEntityToBookDTO)
                     .collect(Collectors.toList());
 
-            return bookDTOs;
+            return new ResponseEntity<>(bookDTOs, HttpStatus.OK);
         }
     }
 
     @PostMapping
-    public AuthorDTO addAuthor(@RequestBody AuthorDTO authorDTO) { //get entity params from body
+    public ResponseEntity<AuthorDTO> addAuthor(@RequestBody AuthorDTO authorDTO) { //get entity params from body
 
         authorDTO.setId(0);
         Author author = authorService.convertAuthorDTOToAuthorEntity(authorDTO);
@@ -111,11 +110,11 @@ public class AuthorRestController {
         System.out.println("Saved author: " + authorInDB);
 
         AuthorDTO returnAuthorDTO = authorService.convertAuthorEntityToAuthorDTO(authorInDB);
-        return returnAuthorDTO;
+        return new ResponseEntity<>(returnAuthorDTO, HttpStatus.OK);
     }
 
     @PutMapping
-    public AuthorDTO updateAuthor(@RequestBody AuthorDTO authorDTO) {
+    public ResponseEntity<AuthorDTO> updateAuthor(@RequestBody AuthorDTO authorDTO) {
 
         Author author = new Author();
         //if author exists or not
@@ -151,11 +150,11 @@ public class AuthorRestController {
         System.out.println("Saved author: " + authorInDB);
 
         AuthorDTO returnAuthorDTO = authorService.convertAuthorEntityToAuthorDTO(authorInDB);
-        return returnAuthorDTO;
+        return new ResponseEntity<>(returnAuthorDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{authorId}")
-    public String deleteAuthor(@PathVariable int authorId) {
+    public ResponseEntity<String> deleteAuthor(@PathVariable int authorId) {
 
         Author tempAuthor = authorService.findById(authorId);
 
@@ -166,6 +165,6 @@ public class AuthorRestController {
         authorService.deleteById(authorId);
         System.out.println("\nAuthor with id " + authorId + " is deleted.");
 
-        return "Deleted author id: " + authorId;
+        return new ResponseEntity<>("Deleted author id: " + authorId, HttpStatus.OK);
     }
 }

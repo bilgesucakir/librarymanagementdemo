@@ -7,6 +7,9 @@ import com.example.librarymanagementdemo.service.BookService;
 import com.example.librarymanagementdemo.service.CheckoutService;
 import com.example.librarymanagementdemo.service.LibraryUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +31,7 @@ public class CheckoutRestController {
     }
 
     @GetMapping
-    public List<CheckoutDTO> findAll(){
+    public ResponseEntity<List<CheckoutDTO>> findAll(){
 
         System.out.println("\nWill return all checkouts in db.");
 
@@ -36,11 +39,11 @@ public class CheckoutRestController {
                 .map(checkoutService::convertCheckoutEntityToCheckoutDTO)
                 .collect(Collectors.toList());
 
-        return checkoutDTOs;
+        return new ResponseEntity<>(checkoutDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/{checkoutId}")
-    public CheckoutDTO getCheckout(@PathVariable int checkoutId){
+    public ResponseEntity<CheckoutDTO> getCheckout(@PathVariable int checkoutId){
 
         Checkout checkout = checkoutService.findById(checkoutId);
 
@@ -51,11 +54,11 @@ public class CheckoutRestController {
         System.out.println("\nCheckout with id " + checkout + " is found.");
 
         CheckoutDTO checkoutDTO = checkoutService.convertCheckoutEntityToCheckoutDTO(checkout);
-        return checkoutDTO;
+        return new ResponseEntity<>(checkoutDTO, HttpStatus.OK);
     }
 
     @PostMapping
-    public CheckoutDTO addCheckout(@RequestBody CheckoutDTO checkoutDTO) {
+    public ResponseEntity<CheckoutDTO> addCheckout(@RequestBody CheckoutDTO checkoutDTO) {
         //check if book and user id exists in request body
         if(checkoutDTO.getUserId() == null){
             throw new RuntimeException("User id is not provided. Cannot add checkout.");
@@ -85,12 +88,12 @@ public class CheckoutRestController {
             System.out.println("Saved checkout: " + checkoutInDB + " with user id: " + userId + " and book id: " + bookId );
 
             CheckoutDTO returnCheckoutDTO = checkoutService.convertCheckoutEntityToCheckoutDTO(checkoutInDB);
-            return returnCheckoutDTO;
+            return new ResponseEntity<>(returnCheckoutDTO, HttpStatus.OK);
         }
     }
 
     @PutMapping
-    public CheckoutDTO updateCheckout(@RequestBody CheckoutDTO checkoutDTO) {
+    public ResponseEntity<CheckoutDTO> updateCheckout(@RequestBody CheckoutDTO checkoutDTO) {
 
         Checkout checkout = new Checkout();
         int checkoutId = checkoutDTO.getId();
@@ -129,11 +132,11 @@ public class CheckoutRestController {
         System.out.println("Updated checkout: " + checkoutInDB);
 
         CheckoutDTO returnCheckoutDTO = checkoutService.convertCheckoutEntityToCheckoutDTO(checkoutInDB);
-        return returnCheckoutDTO;
+        return new ResponseEntity<>(returnCheckoutDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{checkoutId}")
-    public String deleteCheckout(@PathVariable int checkoutId) {
+    public ResponseEntity<String> deleteCheckout(@PathVariable int checkoutId) {
 
         Checkout tempCheckout = checkoutService.findById(checkoutId);
 
@@ -144,6 +147,6 @@ public class CheckoutRestController {
         checkoutService.deleteById(checkoutId);
         System.out.println("\nCheckout with id " + checkoutId + " is deleted.");
 
-        return "Deleted checkout id: " + checkoutId;
+        return new ResponseEntity<>("Deleted checkout id: " + checkoutId, HttpStatus.OK);
     }
 }
