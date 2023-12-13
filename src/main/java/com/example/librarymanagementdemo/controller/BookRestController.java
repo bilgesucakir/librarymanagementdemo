@@ -7,6 +7,9 @@ import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
+import com.example.librarymanagementdemo.exception.BookNotFoundException;
+import com.example.librarymanagementdemo.exception.LibraryBranchIdNullException;
+import com.example.librarymanagementdemo.exception.LibraryBranchNotFoundException;
 import com.example.librarymanagementdemo.service.AuthorService;
 import com.example.librarymanagementdemo.service.BookService;
 import com.example.librarymanagementdemo.service.CheckoutService;
@@ -73,7 +76,7 @@ public class BookRestController {
         Book book = bookService.findById(bookId);
 
         if(book == null){
-            throw new RuntimeException("Couldn't find book with id: " + bookId);
+            throw new BookNotFoundException("Couldn't find book with id: " + bookId);
         }
 
         System.out.println("\nBook with id " + bookId + " is found.");
@@ -88,7 +91,7 @@ public class BookRestController {
         Book book = bookService.findById(bookId);
 
         if(book == null){
-            throw new RuntimeException("Cannot return authors. Couldn't find book with id: " + bookId);
+            throw new BookNotFoundException("Cannot return authors. Couldn't find book with id: " + bookId);
         }
         else{
             System.out.println("\nWill return all authors of book with id " + bookId);
@@ -108,7 +111,7 @@ public class BookRestController {
         Book book = bookService.findById(bookId);
 
         if(book == null){
-            throw new RuntimeException("Cannot return checkouts. Couldn't find book with id: " + bookId);
+            throw new BookNotFoundException("Cannot return checkouts. Couldn't find book with id: " + bookId);
         }
         else{
             System.out.println("\nWill return all checkouts of book with id " + bookId);
@@ -126,14 +129,14 @@ public class BookRestController {
     public ResponseEntity<BookDTO> addBook(@RequestBody BookDTO bookDTO)
     {
         if(bookDTO.getLibraryBranchId() == null){
-            throw new RuntimeException("Library branch id is not provided. Cannot add book.");
+            throw new LibraryBranchIdNullException("Library branch id is not provided. Cannot add book.");
         }
         int libraryBranchId = bookDTO.getLibraryBranchId();
 
         LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
 
         if(libraryBranch == null){
-            throw new RuntimeException("Cannot add book. Couldn't find library branch with id: " + libraryBranchId);
+            throw new LibraryBranchNotFoundException("Cannot add book. Couldn't find library branch with id: " + libraryBranchId);
         }
         else{
             bookDTO.setId(0);
@@ -166,17 +169,18 @@ public class BookRestController {
             libraryBranch = libraryBranchService.findById(libraryBranchId);
 
             if(libraryBranch == null){
-                throw new RuntimeException("Cannot update/add book. Couldn't find library branch with id: " + libraryBranchId);
+                throw new LibraryBranchNotFoundException("Cannot update/add book. Couldn't find library branch with id: " + libraryBranchId);
             }
         }
 
         Book book = new Book();
 
         if(bookDTO.getId() != 0){
-            book = bookService.findById(bookDTO.getId());
+            int bookIdFromGet = bookDTO.getId();
+            book = bookService.findById(bookIdFromGet);
 
             if(book == null){
-                throw new RuntimeException("Cannot update book. No book exists with id: " + bookDTO.getId() );
+                throw new BookNotFoundException("Cannot update book. No book exists with id: " + bookIdFromGet);
             }
         }
         else{
@@ -210,7 +214,7 @@ public class BookRestController {
         Book tempBook = bookService.findById(bookId);
 
         if (tempBook == null) {
-            throw new RuntimeException("Deletion failed. could not found a book with id: " + bookId);
+            throw new BookNotFoundException("Deletion failed. could not found a book with id: " + bookId);
         }
 
         bookService.deleteById(bookId);

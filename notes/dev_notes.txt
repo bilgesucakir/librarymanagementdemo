@@ -1,6 +1,4 @@
 ***TO DO***
-exception handling
-
 error responses
 
 security config - authuser (with roles? role field should be added to the related table)
@@ -9,10 +7,13 @@ use of bcrypt? - research for other crypt options suitable
 
 maybe frontend can be started with angular later on (as a separate project or addition to this one)
 
-mapper classes (entity-dto mapping can be moved there, but what about partial update)
-
 ***NOTES***
 author tested for response entity return type, other 4 entities should be tested
+
+exception classes implementation
+
+cannotalterbookid
+cannotalteruserid exceptions?
 
 
 

@@ -4,6 +4,7 @@ import com.example.librarymanagementdemo.dto.BookDTO;
 import com.example.librarymanagementdemo.dto.LibraryBranchDTO;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
+import com.example.librarymanagementdemo.exception.LibraryBranchNotFoundException;
 import com.example.librarymanagementdemo.service.BookService;
 import com.example.librarymanagementdemo.service.LibraryBranchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class LibraryBranchRestController {
         LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
 
         if (libraryBranch == null) {
-            throw new RuntimeException("Couldn't find library branch with id: " + libraryBranchId);
+            throw new LibraryBranchNotFoundException("Couldn't find library branch with id: " + libraryBranchId);
         }
 
         System.out.println("\nLibrary branch with id " + libraryBranchId + " is found.");
@@ -74,7 +75,7 @@ public class LibraryBranchRestController {
         LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
 
         if(libraryBranch == null){
-            throw new RuntimeException("Cannot return books. Couldn't find library branch with id: " + libraryBranchId);
+            throw new LibraryBranchNotFoundException("Cannot return books. Couldn't find library branch with id: " + libraryBranchId);
         }
         else{
 
@@ -118,7 +119,7 @@ public class LibraryBranchRestController {
             libraryBranch = libraryBranchService.findById(libraryBranchDTO.getId());
 
             if(libraryBranch == null){
-                throw new RuntimeException("Cannot update librarybranch. No librarybranch exists with id: " + libraryBranchDTO.getId());
+                throw new LibraryBranchNotFoundException("Cannot update librarybranch. No librarybranch exists with id: " + libraryBranchDTO.getId());
             }
         }
         else{
@@ -158,7 +159,7 @@ public class LibraryBranchRestController {
         LibraryBranch tempLibraryBranch = libraryBranchService.findById(libraryBranchId);
 
         if (tempLibraryBranch == null) {
-            throw new RuntimeException("Deletion failed. could not found a library branch with id: " + libraryBranchId);
+            throw new LibraryBranchNotFoundException("Deletion failed. could not found a library branch with id: " + libraryBranchId);
         }
 
         libraryBranchService.deleteById(libraryBranchId);

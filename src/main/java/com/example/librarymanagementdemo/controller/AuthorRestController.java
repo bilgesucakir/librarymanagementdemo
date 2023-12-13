@@ -4,6 +4,7 @@ import com.example.librarymanagementdemo.dto.AuthorDTO;
 import com.example.librarymanagementdemo.dto.BookDTO;
 import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
+import com.example.librarymanagementdemo.exception.AuthorNotFoundException;
 import com.example.librarymanagementdemo.service.AuthorService;
 import com.example.librarymanagementdemo.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class AuthorRestController {
         Author author = authorService.findById(authorId);
 
         if(author == null){
-            throw new RuntimeException("Couldn't find author with id: " + authorId);
+            throw new AuthorNotFoundException("Couldn't find author with id: " + authorId);
         }
 
         System.out.println("\nAuthor with id " + authorId + " is found.");
@@ -77,7 +78,7 @@ public class AuthorRestController {
         Author author = authorService.findById(authorId);
 
         if(author == null){
-            throw new RuntimeException("Cannot return books. Couldn't find author with id: " + authorId);
+            throw new AuthorNotFoundException("Cannot return books. Couldn't find author with id: " + authorId);
         }
         else{
 
@@ -122,7 +123,7 @@ public class AuthorRestController {
 
             author = authorService.findById(authorDTO.getId());
             if(author == null){
-                throw new RuntimeException("Cannot update author. No author exists with id: " + authorDTO.getId() );
+                throw new AuthorNotFoundException("Cannot update author. No author exists with id: " + authorDTO.getId() );
             }
         }
         else{ //cretae new instance
@@ -159,7 +160,7 @@ public class AuthorRestController {
         Author tempAuthor = authorService.findById(authorId);
 
         if (tempAuthor == null) {
-            throw new RuntimeException("Deletion failed. could not found an author with id: " + authorId);
+            throw new AuthorNotFoundException("Deletion failed. could not found an author with id: " + authorId);
         }
 
         authorService.deleteById(authorId);

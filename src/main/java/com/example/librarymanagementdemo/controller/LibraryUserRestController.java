@@ -3,10 +3,12 @@ package com.example.librarymanagementdemo.controller;
 import com.example.librarymanagementdemo.dto.CheckoutDTO;
 import com.example.librarymanagementdemo.dto.LibraryUserDTO;
 import com.example.librarymanagementdemo.entity.LibraryUser;
+import com.example.librarymanagementdemo.exception.EmailValidationException;
+import com.example.librarymanagementdemo.exception.LibraryUserNotFoundException;
+import com.example.librarymanagementdemo.exception.UsernameValidatonException;
 import com.example.librarymanagementdemo.service.CheckoutService;
 import com.example.librarymanagementdemo.service.LibraryUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +48,7 @@ public class LibraryUserRestController {
         LibraryUser libraryUser = libraryUserService.findById(libraryUserId);
 
         if(libraryUser == null){
-            throw new RuntimeException("Couldn't find library user with id: " + libraryUserId);
+            throw new LibraryUserNotFoundException("Couldn't find library user with id: " + libraryUserId);
         }
         System.out.println("\nLibrary user with id " + libraryUserId + " is found.");
 
@@ -60,7 +62,7 @@ public class LibraryUserRestController {
         LibraryUser libraryUser = libraryUserService.findById(libraryUserId);
 
         if(libraryUser == null){
-                throw new RuntimeException("Cannot return checkouts. Couldn't find library user with id: " + libraryUserId);
+                throw new LibraryUserNotFoundException("Cannot return checkouts. Couldn't find library user with id: " + libraryUserId);
         }
         else{
             System.out.println("\nWill return all checkouts of library user with id " + libraryUserId);
@@ -78,36 +80,36 @@ public class LibraryUserRestController {
 
         //username and email checks
         if(libraryUserDTO.getUsername() == null){
-            throw new RuntimeException("Username field of libraryuser cannot be empty.");
+            throw new UsernameValidatonException("Username field of libraryuser cannot be empty.");
         }
         else{
             String usernameInput = libraryUserDTO.getUsername();
 
             if(libraryUserService.libraryUserExistsWithUsernameOrNot(usernameInput)){
-                throw new RuntimeException("Cannot add libaryuser. Given username \""
+                throw new UsernameValidatonException("Cannot add libaryuser. Given username \""
                         + usernameInput + "\" already exists in database.");
             }
             else{
                 if(usernameInput.matches(".*\\s.*")){
-                    throw new RuntimeException("Cannot add libraryuser. Given username \""
+                    throw new UsernameValidatonException("Cannot add libraryuser. Given username \""
                             + usernameInput + "\" contains at least one whitespace character.");
                 }
             }
         }
 
         if(libraryUserDTO.getEmail() == null){
-            throw new RuntimeException("Email field of libraryuser cannot be empty.");
+            throw new EmailValidationException("Email field of libraryuser cannot be empty.");
         }
         else{
             String emailInput = libraryUserDTO.getEmail();
 
             if(libraryUserService.libraryUserExistsWithEmailOrNot(emailInput)){
-                throw new RuntimeException("Cannot add libaryuser. Given email \""
+                throw new EmailValidationException("Cannot add libaryuser. Given email \""
                         + emailInput + "\" already exists in database.");
             }
             else{
                 if(!emailInput.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
-                    throw new RuntimeException("Cannot add libraryuser. Given email \""
+                    throw new EmailValidationException("Cannot add libraryuser. Given email \""
                             + emailInput + "\" is not in correct format.");
                 }
             }
@@ -133,19 +135,19 @@ public class LibraryUserRestController {
             libraryUser = libraryUserService.findById(libraryUserDTO.getId());
 
             if(libraryUser == null){
-                throw new RuntimeException("Cannot update libraryuser. No libraryuser exists with given id: " + libraryUserDTO.getId());
+                throw new LibraryUserNotFoundException("Cannot update libraryuser. No libraryuser exists with given id: " + libraryUserDTO.getId());
             }
 
             if(libraryUserDTO.getUsername() != null && !libraryUserDTO.getUsername().equals(libraryUser.getUsername()) ){ //username change
                 String usernameInput = libraryUserDTO.getUsername();
 
                 if(libraryUserService.libraryUserExistsWithUsernameOrNot(usernameInput)){
-                    throw new RuntimeException("Cannot add libaryuser. Given username \""
+                    throw new UsernameValidatonException("Cannot add libaryuser. Given username \""
                             + usernameInput + "\" already exists in database.");
                 }
                 else{
                     if(usernameInput.matches(".*\\s.*")){
-                        throw new RuntimeException("Cannot add libraryuser. Given username \""
+                        throw new UsernameValidatonException("Cannot add libraryuser. Given username \""
                                 + usernameInput + "\" contains at least one whitespace character.");
                     }
                 }
@@ -154,13 +156,13 @@ public class LibraryUserRestController {
                 String emailInput = libraryUserDTO.getEmail();
 
                 if(libraryUserService.libraryUserExistsWithEmailOrNot(emailInput)){
-                    throw new RuntimeException("Cannot add libaryuser. Given email \""
+                    throw new EmailValidationException("Cannot add libaryuser. Given email \""
                             + emailInput + "\" already exists in database.");
                 }
                 else{
                     System.out.println("\""+ emailInput + "\"");
                     if(!emailInput.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
-                        throw new RuntimeException("Cannot add libraryuser. Given email \""
+                        throw new EmailValidationException("Cannot add libraryuser. Given email \""
                                 + emailInput + "\" is not in correct format.");
                     }
                 }
@@ -173,37 +175,37 @@ public class LibraryUserRestController {
             //Thus, username and email fields should be non-redundant.
 
             if(libraryUserDTO.getUsername() == null){
-                throw new RuntimeException("Username field of libraryuser cannot be empty.");
+                throw new UsernameValidatonException("Username field of libraryuser cannot be empty.");
             }
             else{
                 String usernameInput = libraryUserDTO.getUsername();
 
                 if(libraryUserService.libraryUserExistsWithUsernameOrNot(usernameInput)){
-                    throw new RuntimeException("Cannot add libaryuser. Given username \""
+                    throw new UsernameValidatonException("Cannot add libaryuser. Given username \""
                             + usernameInput + "\" already exists in database.");
                 }
                 else{
                     if(usernameInput.matches(".*\\s.*")){
-                        throw new RuntimeException("Cannot add libraryuser. Given username \""
+                        throw new UsernameValidatonException("Cannot add libraryuser. Given username \""
                                 + usernameInput + "\" contains at least one whitespace character.");
                     }
                 }
             }
 
             if(libraryUserDTO.getEmail() == null){
-                throw new RuntimeException("Email field of libraryuser cannot be empty.");
+                throw new EmailValidationException("Email field of libraryuser cannot be empty.");
             }
             else{
                 String emailInput = libraryUserDTO.getEmail();
 
                 if(libraryUserService.libraryUserExistsWithEmailOrNot(emailInput)){
-                    throw new RuntimeException("Cannot add libaryuser. Given email \""
+                    throw new EmailValidationException("Cannot add libaryuser. Given email \""
                             + emailInput + "\" already exists in database.");
                 }
                 else{
                     System.out.println("\""+ emailInput + "\"");
                     if(!emailInput.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
-                        throw new RuntimeException("Cannot add libraryuser. Given email \""
+                        throw new EmailValidationException("Cannot add libraryuser. Given email \""
                                 + emailInput + "\" is not in correct format.");
                     }
                 }
@@ -225,7 +227,7 @@ public class LibraryUserRestController {
         LibraryUser tempLibraryUser = libraryUserService.findById(libraryUserId);
 
         if (tempLibraryUser == null) {
-            throw new RuntimeException("Deletion failed. could not found a library user with id: " + libraryUserId);
+            throw new LibraryUserNotFoundException("Deletion failed. could not found a library user with id: " + libraryUserId);
         }
 
         libraryUserService.deleteById(libraryUserId);

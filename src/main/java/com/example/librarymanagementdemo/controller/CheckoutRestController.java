@@ -3,15 +3,16 @@ import com.example.librarymanagementdemo.dto.CheckoutDTO;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryUser;
+import com.example.librarymanagementdemo.exception.*;
 import com.example.librarymanagementdemo.service.BookService;
 import com.example.librarymanagementdemo.service.CheckoutService;
 import com.example.librarymanagementdemo.service.LibraryUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,7 @@ public class CheckoutRestController {
         Checkout checkout = checkoutService.findById(checkoutId);
 
         if(checkout == null){
-            throw new RuntimeException("Couldn't find checkout with id: " + checkoutId);
+            throw new CheckoutNotFoundException("Couldn't find checkout with id: " + checkoutId);
         }
 
         System.out.println("\nCheckout with id " + checkout + " is found.");
@@ -60,11 +61,14 @@ public class CheckoutRestController {
     @PostMapping
     public ResponseEntity<CheckoutDTO> addCheckout(@RequestBody CheckoutDTO checkoutDTO) {
         //check if book and user id exists in request body
-        if(checkoutDTO.getUserId() == null){
-            throw new RuntimeException("User id is not provided. Cannot add checkout.");
+        if(checkoutDTO.getBookId() == null){
+            throw new BookIdNullException("Cannot add new record. Book id field cannot be null.");
         }
-        else if(checkoutDTO.getBookId() == null){
-            throw new RuntimeException("Book id is not provided. Cannot add checkout.");
+        else if(checkoutDTO.getUserId() == null){
+            throw new LibraryUserIdNullException("Cannot add new record. Library user id field cannot be null.");
+        }
+        if(!checkoutDTO.getCheckedOutDate().before(checkoutDTO.getDueDate())){
+            throw new InvalidDateRangeException("Checked out date cannot be bigger than or equal to due date. Cannot add checkout.");
         }
 
         //check if given user and book id exists in database
@@ -75,10 +79,10 @@ public class CheckoutRestController {
         LibraryUser libraryUser = libraryUserService.findById(userId);
 
         if(book == null){
-            throw new RuntimeException("Cannot add checkout. Couldn't find book with id: " + bookId);
+            throw new BookNotFoundException("Cannot add checkout. Couldn't find book with id: " + bookId);
         }
         else if(libraryUser == null){
-            throw new RuntimeException("Cannot add checkout. Couldn't find libraryuser with id: " + userId);
+            throw new LibraryUserNotFoundException("Cannot add checkout. Couldn't find libraryuser with id: " + userId);
         }
         else{
             checkoutDTO.setId(0);
@@ -101,9 +105,17 @@ public class CheckoutRestController {
 
         //treated as id==0 add, id!=0 update
         if(checkoutId == 0){ //book and user id cannot be null
-            if(checkoutDTO.getBookId() == null || checkoutDTO.getUserId() == null){
-                throw new RuntimeException("Cannot add new record. Book id or library user id cannot be null.");
+
+            if(checkoutDTO.getBookId() == null){
+                throw new BookIdNullException("Cannot add new record. Book id field cannot be null.");
             }
+            else if(checkoutDTO.getUserId() == null){
+                throw new LibraryUserIdNullException("Cannot add new record. Library user id field cannot be null.");
+            }
+            if(!checkoutDTO.getCheckedOutDate().before(checkoutDTO.getDueDate())){
+                throw new InvalidDateRangeException("Checked out date cannot be bigger than or equal to due date. Cannot add checkout.");
+            }
+
             checkout.setId(0);
             checkout = checkoutService.updateCheckoutPartially(checkout, checkoutDTO);
 
@@ -115,16 +127,21 @@ public class CheckoutRestController {
         else{
             checkout = checkoutService.findById(checkoutId);
             if(checkout == null){
-                throw new RuntimeException("Cannot update checkout. No checkout exists with id: " + checkoutId);
+                throw new CheckoutNotFoundException("Cannot update checkout. No checkout exists with id: " + checkoutId);
             }
-            else{ //book and user id must match if not null with existing record
-                if(checkoutDTO.getBookId() != null && checkout.getBook().getId() != checkoutDTO.getBookId()){
-                    throw new RuntimeException("Cannot update checkout. You cannot alter book id of a checkout.");
-                }
-                if(checkoutDTO.getUserId() != null && checkout.getLibraryUser().getId() != checkoutDTO.getUserId()){
-                    throw new RuntimeException("Cannot update checkout. You cannot alter libaryuser id of a checkout.");
-                }
+
+            //book and user id must match if not null with existing record
+            if(checkoutDTO.getBookId() != null && checkout.getBook().getId() != checkoutDTO.getBookId()){
+                throw new BookIdChangeNotAllowedException("Cannot update checkout. You cannot alter book id of a checkout.");
             }
+            if(checkoutDTO.getUserId() != null && checkout.getLibraryUser().getId() != checkoutDTO.getUserId()){
+                throw new LibraryUserIdChangeNotAllowedException("Cannot update checkout. You cannot alter libaryuser id of a checkout.");
+            }
+
+            if(!checkoutDTO.getCheckedOutDate().before(checkoutDTO.getDueDate())){
+                throw new InvalidDateRangeException("Checked out date cannot be bigger than or equal to due date. Cannot update checkout.");
+            }
+
             checkout = checkoutService.updateCheckoutPartially(checkout, checkoutDTO);
             checkoutInDB = checkoutService.setFieldsAndSaveCheckout(checkout, null, null);
         }
@@ -141,7 +158,7 @@ public class CheckoutRestController {
         Checkout tempCheckout = checkoutService.findById(checkoutId);
 
         if (tempCheckout == null) {
-            throw new RuntimeException("Deletion failed. could not found a checkout with id: " + checkoutId);
+            throw new CheckoutNotFoundException("Deletion failed. could not found a checkout with id: " + checkoutId);
         }
 
         checkoutService.deleteById(checkoutId);
