@@ -5,6 +5,9 @@ import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
+import com.example.librarymanagementdemo.exception.EntityFieldValidationException;
+import com.example.librarymanagementdemo.exception.EntityIdNullException;
+import com.example.librarymanagementdemo.exception.EntityNotFoundException;
 import com.example.librarymanagementdemo.repository.BookRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -41,10 +44,13 @@ public class BookServiceImp implements  BookService{
     public Book findById(int id) {
         Optional<Book> result = bookRepository.findById(id);
 
-        Book book = null;
+        Book book;
 
         if (result.isPresent()) {
             book = result.get();
+        }
+        else{
+            throw new EntityNotFoundException("Couldn't find book with id: " + id);
         }
 
         return book;
@@ -231,8 +237,38 @@ public class BookServiceImp implements  BookService{
         }
 
         return book;
-
     }
 
+    @Override
+    public void validateAddBook(BookDTO bookDTO) {
+
+        if(bookDTO.getLibraryBranchId() == null){
+            throw new EntityIdNullException("Library branch id is not provided.");
+        }
+        if(bookDTO.getTitle() != null) {
+            if (bookDTO.getTitle().trim().isEmpty()) {
+                throw new EntityFieldValidationException("Wrong book title format. Book title only contains whitespaces");
+            }
+        }
+        if(bookDTO.getISBN() != null){
+            if(!bookDTO.getISBN().matches("\\d{13}")){  //not being a string of length 13 and only numeric chars
+                throw new EntityFieldValidationException("Wrong ISBN format given.");
+            }
+        }
+    }
+
+    @Override
+    public void validateUpdateBook(BookDTO bookDTO) {
+        if(bookDTO.getTitle() != null) {
+            if (bookDTO.getTitle().trim().isEmpty()) {
+                throw new EntityFieldValidationException("Wrong book title format. Book title only contains whitespaces");
+            }
+        }
+        if(bookDTO.getISBN() != null){
+            if(!bookDTO.getISBN().matches("\\d{13}")){  //not being a string of length 13 and only numeric chars
+                throw new EntityFieldValidationException("Wrong ISBN format given.");
+            }
+        }
+    }
 
 }

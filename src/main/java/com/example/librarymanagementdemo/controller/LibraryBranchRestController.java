@@ -4,7 +4,6 @@ import com.example.librarymanagementdemo.dto.BookDTO;
 import com.example.librarymanagementdemo.dto.LibraryBranchDTO;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
-import com.example.librarymanagementdemo.exception.LibraryBranchNotFoundException;
 import com.example.librarymanagementdemo.service.BookService;
 import com.example.librarymanagementdemo.service.LibraryBranchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +35,12 @@ public class LibraryBranchRestController {
             @RequestParam(name = "location", required = false) String location,
             @RequestParam(name = "capacity", required = false) Integer capacity
     ){
-        List<LibraryBranch> libraryBranches = new ArrayList<>();
+        List<LibraryBranch> libraryBranches;
         if(name == null && location == null && capacity == null){
 
-            System.out.println("\nWill return all branches in db.");
             libraryBranches = libraryBranchService.findAll();
         }
         else{
-            System.out.print("\nWill return all librarybranches in db with filtering.");
             libraryBranches = libraryBranchService.findByFilter(name, location, capacity);
         }
 
@@ -59,11 +56,6 @@ public class LibraryBranchRestController {
 
         LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
 
-        if (libraryBranch == null) {
-            throw new LibraryBranchNotFoundException("Couldn't find library branch with id: " + libraryBranchId);
-        }
-
-        System.out.println("\nLibrary branch with id " + libraryBranchId + " is found.");
         LibraryBranchDTO libraryBranchDTO =libraryBranchService.convertLibraryBranchEntityToLibraryBranchDTO(libraryBranch);
 
         return new ResponseEntity<>(libraryBranchDTO, HttpStatus.OK);
@@ -74,19 +66,12 @@ public class LibraryBranchRestController {
 
         LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
 
-        if(libraryBranch == null){
-            throw new LibraryBranchNotFoundException("Cannot return books. Couldn't find library branch with id: " + libraryBranchId);
-        }
-        else{
+        List<BookDTO> bookDTOs = bookService.findByLibraryBranch(libraryBranch).stream()
+                .map(bookService::convertBookEntityToBookDTO)
+                .collect(Collectors.toList());
 
-            System.out.println("\nWill return all books of library branch with id " + libraryBranchId);
+        return new ResponseEntity<>(bookDTOs, HttpStatus.OK);
 
-            List<BookDTO> bookDTOs = bookService.findByLibraryBranch(libraryBranch).stream()
-                    .map(bookService::convertBookEntityToBookDTO)
-                    .collect(Collectors.toList());
-
-            return new ResponseEntity<>(bookDTOs, HttpStatus.OK);
-        }
     }
 
     @PostMapping
@@ -94,6 +79,8 @@ public class LibraryBranchRestController {
 
         libraryBranchDTO.setId(0); //to force a save of new item
         List<Book> books = new ArrayList<>();
+
+        libraryBranchService.validateLibraryBranch(libraryBranchDTO);
 
         if(libraryBranchDTO.getBookIds() != null) {
             books = libraryBranchDTO.getBookIds().stream()
@@ -105,7 +92,6 @@ public class LibraryBranchRestController {
 
         LibraryBranch branchInDB = libraryBranchService.setBooksAndSaveLibraryBranch(libraryBranch, books);
 
-        System.out.println("Saved library branch: " + branchInDB);
         LibraryBranchDTO returnLibraryBranchDTO = libraryBranchService.convertLibraryBranchEntityToLibraryBranchDTO(branchInDB);
 
         return new ResponseEntity<>(returnLibraryBranchDTO, HttpStatus.OK);
@@ -118,16 +104,13 @@ public class LibraryBranchRestController {
         if(libraryBranchDTO.getId() != 0){
             libraryBranch = libraryBranchService.findById(libraryBranchDTO.getId());
 
-            if(libraryBranch == null){
-                throw new LibraryBranchNotFoundException("Cannot update librarybranch. No librarybranch exists with id: " + libraryBranchDTO.getId());
-            }
         }
         else{
             libraryBranch.setId(0);
         }
 
         libraryBranch = libraryBranchService.updateLibraryBranchPartially(libraryBranch, libraryBranchDTO);
-        LibraryBranch libraryBranchInDB = new LibraryBranch();
+        LibraryBranch libraryBranchInDB;
 
         if(libraryBranchDTO.getBookIds() != null){
             List<Book> books = libraryBranchDTO.getBookIds().stream()
@@ -135,19 +118,12 @@ public class LibraryBranchRestController {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
-            try {
-                libraryBranchInDB = libraryBranchService.setBooksAndSaveLibraryBranch(libraryBranch, books);
-            }
-            catch(Exception e){
-                System.out.println(e.getMessage());
-            }
-
+            libraryBranchInDB = libraryBranchService.setBooksAndSaveLibraryBranch(libraryBranch, books);
         }
         else{
             libraryBranchInDB = libraryBranchService.setBooksAndSaveLibraryBranch(libraryBranch, null);
         }
 
-        System.out.println("Updated library branch: " + libraryBranchInDB);
         LibraryBranchDTO returnLibraryBranchDTO = libraryBranchService.convertLibraryBranchEntityToLibraryBranchDTO(libraryBranchInDB);
 
         return new ResponseEntity<>(returnLibraryBranchDTO, HttpStatus.OK);
@@ -156,14 +132,9 @@ public class LibraryBranchRestController {
     @DeleteMapping("/{libraryBranchId}")
     public ResponseEntity<String> deleteLibraryBranch(@PathVariable int libraryBranchId) {
 
-        LibraryBranch tempLibraryBranch = libraryBranchService.findById(libraryBranchId);
-
-        if (tempLibraryBranch == null) {
-            throw new LibraryBranchNotFoundException("Deletion failed. could not found a library branch with id: " + libraryBranchId);
-        }
+        libraryBranchService.findById(libraryBranchId);
 
         libraryBranchService.deleteById(libraryBranchId);
-        System.out.println("\nLibrary branch with id " + libraryBranchId + " is deleted.");
 
         return new ResponseEntity<>("Deleted library branch id: " + libraryBranchId, HttpStatus.OK);
     }

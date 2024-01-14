@@ -3,6 +3,8 @@ package com.example.librarymanagementdemo.service;
 import com.example.librarymanagementdemo.dto.AuthorDTO;
 import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
+import com.example.librarymanagementdemo.exception.EntityFieldValidationException;
+import com.example.librarymanagementdemo.exception.EntityNotFoundException;
 import com.example.librarymanagementdemo.repository.AuthorRepository;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -41,10 +43,13 @@ public class AuthorServiceImp implements AuthorService{
     public Author findById(int id) {
         Optional<Author> result = authorRepository.findById(id);
 
-        Author author = null;
+        Author author;
 
         if(result.isPresent()){
             author = result.get();
+        }
+        else{
+            throw new EntityNotFoundException("Couldn't find author with id: " + id);
         }
 
         return author;
@@ -162,6 +167,15 @@ public class AuthorServiceImp implements AuthorService{
         }
 
         return save(tempAuthor);
+    }
+
+    @Override
+    public void validateAuthor(AuthorDTO authorDTO) {
+        if(authorDTO.getName() != null){
+            if(authorDTO.getName().trim().isEmpty()){
+                throw new EntityFieldValidationException("Wrong author name format. Author name only contains whitespaces.");
+            }
+        }
     }
 
     public Author setBooksOfAuthor(Author author, List<Book> books) {

@@ -28,4 +28,5 @@ public interface LibraryBranchService {
 
     LibraryBranch updateLibraryBranchPartially(LibraryBranch libraryBranch, LibraryBranchDTO libraryBranchDTO);
 
+    void validateLibraryBranch(LibraryBranchDTO libraryBranchDTO);
 }

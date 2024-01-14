@@ -7,9 +7,6 @@ import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
-import com.example.librarymanagementdemo.exception.BookNotFoundException;
-import com.example.librarymanagementdemo.exception.LibraryBranchIdNullException;
-import com.example.librarymanagementdemo.exception.LibraryBranchNotFoundException;
 import com.example.librarymanagementdemo.service.AuthorService;
 import com.example.librarymanagementdemo.service.BookService;
 import com.example.librarymanagementdemo.service.CheckoutService;
@@ -49,17 +46,17 @@ public class BookRestController {
             @RequestParam(name = "genre", required = false) String genre,
             @RequestParam(name = "available", required = false) String available,
             @RequestParam(name = "multipleAuthors", required = false) String multipleAuthors
+
     ){
-        List<Book> books = new ArrayList<>();
+
+        List<Book> books;
         if(title == null && ISBN == null
                 && publicationYear == null && genre == null
                 && available == null && multipleAuthors == null){
 
-            System.out.println("\nWill return all books in db.");
             books = bookService.findAll();
         }
         else{
-            System.out.print("\nWill return all books in db with filtering.");
             books = bookService.findByFilter(title, ISBN, publicationYear, genre, available, multipleAuthors);
         }
 
@@ -75,11 +72,6 @@ public class BookRestController {
 
         Book book = bookService.findById(bookId);
 
-        if(book == null){
-            throw new BookNotFoundException("Couldn't find book with id: " + bookId);
-        }
-
-        System.out.println("\nBook with id " + bookId + " is found.");
 
         BookDTO bookDTO = bookService.convertBookEntityToBookDTO(book);
         return new ResponseEntity<>(bookDTO, HttpStatus.OK);
@@ -90,19 +82,14 @@ public class BookRestController {
 
         Book book = bookService.findById(bookId);
 
-        if(book == null){
-            throw new BookNotFoundException("Cannot return authors. Couldn't find book with id: " + bookId);
-        }
-        else{
-            System.out.println("\nWill return all authors of book with id " + bookId);
 
-            List<Author> authors = authorService.findByBook(book);
-            List<AuthorDTO> authorDTOs = authors.stream()
-                    .map(authorService::convertAuthorEntityToAuthorDTO)
-                    .collect(Collectors.toList());
+        List<Author> authors = authorService.findByBook(book);
+        List<AuthorDTO> authorDTOs = authors.stream()
+                .map(authorService::convertAuthorEntityToAuthorDTO)
+                .collect(Collectors.toList());
 
-            return new ResponseEntity<>(authorDTOs, HttpStatus.OK);
-        }
+        return new ResponseEntity<>(authorDTOs, HttpStatus.OK);
+
     }
 
     @GetMapping("/{bookId}/checkouts")
@@ -110,52 +97,42 @@ public class BookRestController {
 
         Book book = bookService.findById(bookId);
 
-        if(book == null){
-            throw new BookNotFoundException("Cannot return checkouts. Couldn't find book with id: " + bookId);
-        }
-        else{
-            System.out.println("\nWill return all checkouts of book with id " + bookId);
 
-            List<Checkout> checkouts = checkoutService.findByBook(book);
-            List<CheckoutDTO> checkoutDTOs = checkouts.stream()
-                    .map(checkoutService::convertCheckoutEntityToCheckoutDTO)
-                    .collect(Collectors.toList());
+        List<Checkout> checkouts = checkoutService.findByBook(book);
+        List<CheckoutDTO> checkoutDTOs = checkouts.stream()
+                .map(checkoutService::convertCheckoutEntityToCheckoutDTO)
+                .collect(Collectors.toList());
 
-            return new ResponseEntity<>(checkoutDTOs, HttpStatus.OK);
-        }
+        return new ResponseEntity<>(checkoutDTOs, HttpStatus.OK);
+
     }
 
     @PostMapping
     public ResponseEntity<BookDTO> addBook(@RequestBody BookDTO bookDTO)
     {
-        if(bookDTO.getLibraryBranchId() == null){
-            throw new LibraryBranchIdNullException("Library branch id is not provided. Cannot add book.");
-        }
+        bookService.validateAddBook(bookDTO);
+
         int libraryBranchId = bookDTO.getLibraryBranchId();
 
         LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
 
-        if(libraryBranch == null){
-            throw new LibraryBranchNotFoundException("Cannot add book. Couldn't find library branch with id: " + libraryBranchId);
+
+        bookDTO.setId(0);
+        Book book = bookService.convertBookDTOToBookEntity(bookDTO);
+
+        List<Author> authors = new ArrayList<>();
+
+        if(bookDTO.getAuthorIds() != null) {
+            authors = bookDTO.getAuthorIds().stream().map(authorService::findById)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
         }
-        else{
-            bookDTO.setId(0);
-            Book book = bookService.convertBookDTOToBookEntity(bookDTO);
 
-            List<Author> authors = new ArrayList<>();
+        Book bookInDB = bookService.setFieldsAndSaveBook(book, libraryBranch, authors);
 
-            if(bookDTO.getAuthorIds() != null) {
-                authors = bookDTO.getAuthorIds().stream().map(authorService::findById)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
-            }
+        BookDTO returnBookDTO = bookService.convertBookEntityToBookDTO(bookInDB);
+        return new ResponseEntity<>(returnBookDTO, HttpStatus.OK);
 
-            Book bookInDB = bookService.setFieldsAndSaveBook(book, libraryBranch, authors);
-            System.out.println("Saved book: " + bookInDB + " under library branch with id: " + libraryBranchId);
-
-            BookDTO returnBookDTO = bookService.convertBookEntityToBookDTO(bookInDB);
-            return new ResponseEntity<>(returnBookDTO, HttpStatus.OK);
-        }
 
     }
 
@@ -168,9 +145,6 @@ public class BookRestController {
         if(libraryBranchId != null){
             libraryBranch = libraryBranchService.findById(libraryBranchId);
 
-            if(libraryBranch == null){
-                throw new LibraryBranchNotFoundException("Cannot update/add book. Couldn't find library branch with id: " + libraryBranchId);
-            }
         }
 
         Book book = new Book();
@@ -179,16 +153,16 @@ public class BookRestController {
             int bookIdFromGet = bookDTO.getId();
             book = bookService.findById(bookIdFromGet);
 
-            if(book == null){
-                throw new BookNotFoundException("Cannot update book. No book exists with id: " + bookIdFromGet);
-            }
+            bookService.validateAddBook(bookDTO);
         }
         else{
             book.setId(0);
+
+            bookService.validateUpdateBook(bookDTO);
         }
 
         book = bookService.updateBookPartially(book, bookDTO);
-        Book bookInDB = new Book();
+        Book bookInDB;
 
         if(bookDTO.getAuthorIds() != null){
             List<Author> authors = bookDTO.getAuthorIds().stream()
@@ -202,8 +176,6 @@ public class BookRestController {
             bookInDB = bookService.setFieldsAndSaveBook(book, libraryBranch, null);
         }
 
-        System.out.println("Saved book: " + bookInDB);
-
         BookDTO returnBookDTO = bookService.convertBookEntityToBookDTO(bookInDB);
         return new ResponseEntity<>(returnBookDTO, HttpStatus.OK);
     }
@@ -211,14 +183,9 @@ public class BookRestController {
     @DeleteMapping("/{bookId}")
     public ResponseEntity<String> deleteBook(@PathVariable int bookId) {
 
-        Book tempBook = bookService.findById(bookId);
-
-        if (tempBook == null) {
-            throw new BookNotFoundException("Deletion failed. could not found a book with id: " + bookId);
-        }
+        bookService.findById(bookId);
 
         bookService.deleteById(bookId);
-        System.out.println("\nBook with id " + bookId + " is deleted.");
 
         return new ResponseEntity<>("Deleted book id: " + bookId, HttpStatus.OK);
     }

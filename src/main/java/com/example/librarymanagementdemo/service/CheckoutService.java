@@ -30,4 +30,8 @@ public interface CheckoutService {
     Checkout setBookOfCheckout(Checkout checkout, Book book);
 
     Checkout setLibraryUserOfCheckout(Checkout checkout, LibraryUser libraryUser);
+
+    void validateAddCheckout(CheckoutDTO checkoutDTO);
+
+    void valdiateUpdateCheckout(CheckoutDTO checkoutDTO, int bookId, int libraryUserId);
 }

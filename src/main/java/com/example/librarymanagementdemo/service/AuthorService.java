@@ -27,4 +27,6 @@ public interface AuthorService {
     Author updateAuthorPartially(Author author, AuthorDTO authorDTO);
 
     Author setBooksAndSaveAuthor(Author author, List<Book> books);
+
+    void validateAuthor(AuthorDTO authorDTO);
 }

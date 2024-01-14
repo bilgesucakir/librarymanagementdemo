@@ -4,6 +4,7 @@ import com.example.librarymanagementdemo.dto.CheckoutDTO;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryUser;
+import com.example.librarymanagementdemo.exception.*;
 import com.example.librarymanagementdemo.repository.CheckoutRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,10 +31,13 @@ public class CheckoutServiceImp implements CheckoutService{
     public Checkout findById(int id) {
         Optional<Checkout> result = checkoutRepository.findById(id);
 
-        Checkout checkout = null;
+        Checkout checkout;
 
         if (result.isPresent()) {
             checkout = result.get();
+        }
+        else{
+            throw new EntityNotFoundException("Couldn't find checkout with id: " + id);
         }
 
         return checkout;
@@ -126,5 +130,33 @@ public class CheckoutServiceImp implements CheckoutService{
         checkout.setLibraryUser(libraryUser);
 
         return checkout;
+    }
+
+    @Override
+    public void validateAddCheckout(CheckoutDTO checkoutDTO) {
+        if(checkoutDTO.getBookId() == null){
+            throw new EntityIdNullException("Book id field cannot be null.");
+        }
+        else if(checkoutDTO.getUserId() == null){
+            throw new EntityIdNullException("Library user id field cannot be null.");
+        }
+        if(!checkoutDTO.getCheckedOutDate().before(checkoutDTO.getDueDate())){
+            throw new EntityFieldValidationException("Checked out date cannot be bigger than or equal to due date.");
+        }
+    }
+
+    @Override
+    public void valdiateUpdateCheckout(CheckoutDTO checkoutDTO, int bookId, int libraryUserId){
+
+        //book and user id must match if not null with existing record
+        if(checkoutDTO.getBookId() != null && bookId != checkoutDTO.getBookId()){
+            throw new EntityIdChangeNotAllowedException("You cannot alter book id of a checkout during update.");
+        }
+        if(checkoutDTO.getUserId() != null && libraryUserId != checkoutDTO.getUserId()){
+            throw new EntityIdChangeNotAllowedException("You cannot alter libaryuser id of a checkout.");
+        }
+        if(!checkoutDTO.getCheckedOutDate().before(checkoutDTO.getDueDate())){
+            throw new EntityFieldValidationException("Checked out date cannot be bigger than or equal to due date.");
+        }
     }
 }

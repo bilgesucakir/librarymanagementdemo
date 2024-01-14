@@ -24,4 +24,8 @@ public interface LibraryUserService {
     boolean libraryUserExistsWithUsernameOrNot(String username);
 
     boolean libraryUserExistsWithEmailOrNot(String email);
+
+    void validateAddLibraryUser(LibraryUserDTO libraryUserDTO);
+
+    void validateUpdateLibraryUser(LibraryUserDTO libraryUserDTO, String username, String email);
 }

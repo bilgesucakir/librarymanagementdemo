@@ -4,7 +4,6 @@ import com.example.librarymanagementdemo.dto.AuthorDTO;
 import com.example.librarymanagementdemo.dto.BookDTO;
 import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
-import com.example.librarymanagementdemo.exception.AuthorNotFoundException;
 import com.example.librarymanagementdemo.service.AuthorService;
 import com.example.librarymanagementdemo.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,16 +36,14 @@ public class AuthorRestController {
             @RequestParam(name = "birthdate", required = false) Date birthdate,
             @RequestParam(name = "nationality", required = false) String nationality
     ){
-        List<Author> authors = new ArrayList<>();
+        List<Author> authors;
 
         if(name == null && birthdate == null && nationality == null){
 
-            System.out.println("\nWill return all authors in db.");
             authors =  authorService.findAll();
         }
         else{//some filtering exists
 
-            System.out.print("\nWill return all authors in db with filtering.");
             authors =  authorService.findByFilter(name, birthdate, nationality);
         }
 
@@ -62,12 +59,6 @@ public class AuthorRestController {
 
         Author author = authorService.findById(authorId);
 
-        if(author == null){
-            throw new AuthorNotFoundException("Couldn't find author with id: " + authorId);
-        }
-
-        System.out.println("\nAuthor with id " + authorId + " is found.");
-
         AuthorDTO authorDTO = authorService.convertAuthorEntityToAuthorDTO(author);
         return new ResponseEntity<>(authorDTO, HttpStatus.OK);
     }
@@ -77,24 +68,18 @@ public class AuthorRestController {
 
         Author author = authorService.findById(authorId);
 
-        if(author == null){
-            throw new AuthorNotFoundException("Cannot return books. Couldn't find author with id: " + authorId);
-        }
-        else{
-
-            System.out.println("\nWill return all books of author with id " + authorId);
-
-            List<Book> books = bookService.findByAuthor(author);
-            List<BookDTO> bookDTOs = books.stream()
+        List<Book> books = bookService.findByAuthor(author);
+        List<BookDTO> bookDTOs = books.stream()
                     .map(bookService::convertBookEntityToBookDTO)
                     .collect(Collectors.toList());
 
-            return new ResponseEntity<>(bookDTOs, HttpStatus.OK);
-        }
+        return new ResponseEntity<>(bookDTOs, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<AuthorDTO> addAuthor(@RequestBody AuthorDTO authorDTO) { //get entity params from body
+
+        authorService.validateAuthor(authorDTO);
 
         authorDTO.setId(0);
         Author author = authorService.convertAuthorDTOToAuthorEntity(authorDTO);
@@ -108,7 +93,6 @@ public class AuthorRestController {
 
         Author authorInDB = authorService.setBooksAndSaveAuthor(author, books);
 
-        System.out.println("Saved author: " + authorInDB);
 
         AuthorDTO returnAuthorDTO = authorService.convertAuthorEntityToAuthorDTO(authorInDB);
         return new ResponseEntity<>(returnAuthorDTO, HttpStatus.OK);
@@ -121,17 +105,19 @@ public class AuthorRestController {
         //if author exists or not
         if(authorDTO.getId() != 0){ //replace existing instance
 
-            author = authorService.findById(authorDTO.getId());
-            if(author == null){
-                throw new AuthorNotFoundException("Cannot update author. No author exists with id: " + authorDTO.getId() );
+            if(authorDTO.getName() != null){
+                authorService.validateAuthor(authorDTO);
             }
+            author = authorService.findById(authorDTO.getId());
         }
         else{ //cretae new instance
             author.setId(0);
+
+            authorService.validateAuthor(authorDTO);
         }
 
         author = authorService.updateAuthorPartially(author, authorDTO);
-        Author authorInDB = new Author();
+        Author authorInDB;
 
         //book checks
         if(authorDTO.getBookIds()!= null){
@@ -148,7 +134,6 @@ public class AuthorRestController {
         else{
             authorInDB = authorService.setBooksAndSaveAuthor(author, null);
         }
-        System.out.println("Saved author: " + authorInDB);
 
         AuthorDTO returnAuthorDTO = authorService.convertAuthorEntityToAuthorDTO(authorInDB);
         return new ResponseEntity<>(returnAuthorDTO, HttpStatus.OK);
@@ -157,14 +142,9 @@ public class AuthorRestController {
     @DeleteMapping("/{authorId}")
     public ResponseEntity<String> deleteAuthor(@PathVariable int authorId) {
 
-        Author tempAuthor = authorService.findById(authorId);
-
-        if (tempAuthor == null) {
-            throw new AuthorNotFoundException("Deletion failed. could not found an author with id: " + authorId);
-        }
+        authorService.findById(authorId);
 
         authorService.deleteById(authorId);
-        System.out.println("\nAuthor with id " + authorId + " is deleted.");
 
         return new ResponseEntity<>("Deleted author id: " + authorId, HttpStatus.OK);
     }

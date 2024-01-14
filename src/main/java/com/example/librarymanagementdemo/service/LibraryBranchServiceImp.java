@@ -3,6 +3,8 @@ package com.example.librarymanagementdemo.service;
 import com.example.librarymanagementdemo.dto.LibraryBranchDTO;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
+import com.example.librarymanagementdemo.exception.EntityFieldValidationException;
+import com.example.librarymanagementdemo.exception.EntityNotFoundException;
 import com.example.librarymanagementdemo.repository.LibraryBranchRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -37,12 +39,16 @@ public class LibraryBranchServiceImp implements LibraryBranchService{
 
     @Override
     public LibraryBranch findById(int id) {
+
         Optional<LibraryBranch> result = libraryBranchRepository.findById(id);
 
-        LibraryBranch libraryBranch = null;
+        LibraryBranch libraryBranch;
 
         if (result.isPresent()) {
             libraryBranch = result.get();
+        }
+        else{
+            throw new EntityNotFoundException("Couldn't find library branch with id: " + id);
         }
 
         return libraryBranch;
@@ -134,7 +140,6 @@ public class LibraryBranchServiceImp implements LibraryBranchService{
             dto.setBookIds(emptyList);
         }
         else{
-            List<Integer> emptyList = new ArrayList<>();
             dto.setBookIds(libraryBranch.getBooks().stream()
                     .map(Book::getId)
                     .collect(Collectors.toList()));
@@ -160,4 +165,14 @@ public class LibraryBranchServiceImp implements LibraryBranchService{
 
         return libraryBranch;
     }
+
+    @Override
+    public void validateLibraryBranch(LibraryBranchDTO libraryBranchDTO){
+        if(libraryBranchDTO.getName() != null){
+            if(libraryBranchDTO.getName().trim().isEmpty()){
+                throw new EntityFieldValidationException("Wrong library branch name format. Library branch name only contains white spaces.");
+            }
+        }
+    }
+
 }

@@ -1,6 +1,4 @@
 ***TO DO***
-error responses
-
 security config - authuser (with roles? role field should be added to the related table)
 
 use of bcrypt? - research for other crypt options suitable
@@ -8,12 +6,8 @@ use of bcrypt? - research for other crypt options suitable
 maybe frontend can be started with angular later on (as a separate project or addition to this one)
 
 ***NOTES***
-author tested for response entity return type, other 4 entities should be tested
 
-exception classes implementation
+to checkouts part, active or returned bool can be added--> returned checkout will be inactive
 
-cannotalterbookid
-cannotalteruserid exceptions?
-
-
+add bcrypt with jwt or oauth can be used too
 
