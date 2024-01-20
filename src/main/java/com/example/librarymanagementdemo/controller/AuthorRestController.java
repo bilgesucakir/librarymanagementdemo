@@ -7,6 +7,7 @@ import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.service.AuthorService;
 import com.example.librarymanagementdemo.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,19 +34,10 @@ public class AuthorRestController {
     @GetMapping
     public ResponseEntity<List<AuthorDTO>> findAllWithOptionalFilter(
             @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "birthdate", required = false) Date birthdate,
+            @RequestParam(name = "birthdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date birthdate,
             @RequestParam(name = "nationality", required = false) String nationality
     ){
-        List<Author> authors;
-
-        if(name == null && birthdate == null && nationality == null){
-
-            authors =  authorService.findAll();
-        }
-        else{//some filtering exists
-
-            authors =  authorService.findByFilter(name, birthdate, nationality);
-        }
+        List<Author> authors =  authorService.findAllWithOptionalfilter(name, birthdate, nationality);
 
         List<AuthorDTO> authorDTOs = authors.stream()
                 .map(authorService::convertAuthorEntityToAuthorDTO)
@@ -93,7 +85,6 @@ public class AuthorRestController {
 
         Author authorInDB = authorService.setBooksAndSaveAuthor(author, books);
 
-
         AuthorDTO returnAuthorDTO = authorService.convertAuthorEntityToAuthorDTO(authorInDB);
         return new ResponseEntity<>(returnAuthorDTO, HttpStatus.OK);
     }
@@ -102,7 +93,7 @@ public class AuthorRestController {
     public ResponseEntity<AuthorDTO> updateAuthor(@RequestBody AuthorDTO authorDTO) {
 
         Author author = new Author();
-        //if author exists or not
+
         if(authorDTO.getId() != 0){ //replace existing instance
 
             if(authorDTO.getName() != null){
@@ -110,16 +101,15 @@ public class AuthorRestController {
             }
             author = authorService.findById(authorDTO.getId());
         }
-        else{ //cretae new instance
+        else{ //create new instance
             author.setId(0);
 
             authorService.validateAuthor(authorDTO);
         }
 
         author = authorService.updateAuthorPartially(author, authorDTO);
-        Author authorInDB;
 
-        //book checks
+        Author authorInDB;
         if(authorDTO.getBookIds()!= null){
 
             List<Book> books = new ArrayList<>();

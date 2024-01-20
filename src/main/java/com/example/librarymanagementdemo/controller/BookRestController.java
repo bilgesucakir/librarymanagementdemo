@@ -41,24 +41,14 @@ public class BookRestController {
     @GetMapping
     public ResponseEntity<List<BookDTO>> findAllWithOptionalFilter(
             @RequestParam(name = "title", required = false) String title,
-            @RequestParam(name = "isbn", required = false) String ISBN,
+            @RequestParam(name = "ISBN", required = false) String ISBN,
             @RequestParam(name = "publicationYear", required = false) Integer publicationYear,
             @RequestParam(name = "genre", required = false) String genre,
-            @RequestParam(name = "available", required = false) String available,
-            @RequestParam(name = "multipleAuthors", required = false) String multipleAuthors
+            @RequestParam(name = "available", required = false) Boolean available,
+            @RequestParam(name = "multipleAuthors", required = false) Boolean multipleAuthors
 
     ){
-
-        List<Book> books;
-        if(title == null && ISBN == null
-                && publicationYear == null && genre == null
-                && available == null && multipleAuthors == null){
-
-            books = bookService.findAll();
-        }
-        else{
-            books = bookService.findByFilter(title, ISBN, publicationYear, genre, available, multipleAuthors);
-        }
+        List<Book> books = bookService.findAllWithOptionalFilter(title, ISBN, publicationYear, genre, available, multipleAuthors);
 
         List<BookDTO> bookDTOs = books.stream()
                 .map(bookService::convertBookEntityToBookDTO)
@@ -72,7 +62,6 @@ public class BookRestController {
 
         Book book = bookService.findById(bookId);
 
-
         BookDTO bookDTO = bookService.convertBookEntityToBookDTO(book);
         return new ResponseEntity<>(bookDTO, HttpStatus.OK);
     }
@@ -82,21 +71,18 @@ public class BookRestController {
 
         Book book = bookService.findById(bookId);
 
-
         List<Author> authors = authorService.findByBook(book);
         List<AuthorDTO> authorDTOs = authors.stream()
                 .map(authorService::convertAuthorEntityToAuthorDTO)
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(authorDTOs, HttpStatus.OK);
-
     }
 
     @GetMapping("/{bookId}/checkouts")
     public ResponseEntity<List<CheckoutDTO>> getCheckoutOfBook(@PathVariable int bookId){
 
         Book book = bookService.findById(bookId);
-
 
         List<Checkout> checkouts = checkoutService.findByBook(book);
         List<CheckoutDTO> checkoutDTOs = checkouts.stream()
@@ -112,10 +98,7 @@ public class BookRestController {
     {
         bookService.validateAddBook(bookDTO);
 
-        int libraryBranchId = bookDTO.getLibraryBranchId();
-
-        LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchId);
-
+        LibraryBranch libraryBranch = libraryBranchService.findById(bookDTO.getLibraryBranchId());
 
         bookDTO.setId(0);
         Book book = bookService.convertBookDTOToBookEntity(bookDTO);
@@ -132,18 +115,15 @@ public class BookRestController {
 
         BookDTO returnBookDTO = bookService.convertBookEntityToBookDTO(bookInDB);
         return new ResponseEntity<>(returnBookDTO, HttpStatus.OK);
-
-
     }
 
     @PutMapping
     public ResponseEntity<BookDTO> updateBook(@RequestBody BookDTO bookDTO) {
 
-        Integer libraryBranchId = bookDTO.getLibraryBranchId();
         LibraryBranch libraryBranch = null;
 
-        if(libraryBranchId != null){
-            libraryBranch = libraryBranchService.findById(libraryBranchId);
+        if(bookDTO.getLibraryBranchId() != null){
+            libraryBranch = libraryBranchService.findById(bookDTO.getLibraryBranchId());
 
         }
 
@@ -162,8 +142,8 @@ public class BookRestController {
         }
 
         book = bookService.updateBookPartially(book, bookDTO);
-        Book bookInDB;
 
+        Book bookInDB;
         if(bookDTO.getAuthorIds() != null){
             List<Author> authors = bookDTO.getAuthorIds().stream()
                     .map(authorService::findById)

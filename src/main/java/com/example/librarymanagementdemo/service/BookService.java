@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface BookService {
 
-    List<Book> findAll();
+    List<Book> findAllWithOptionalFilter(String title, String ISBN, Integer publicationYear, String genre, Boolean available, Boolean multipleAuthors);
 
     Book findById(int id);
 
@@ -20,8 +20,6 @@ public interface BookService {
     List<Book> findByAuthor(Author author);
 
     List<Book> findByLibraryBranch(LibraryBranch libraryBranch);
-
-    List<Book> findByFilter(String title, String isbn, Integer publicationYear, String genre, String available, String multipleAuthors);
 
     Book setLibraryBranchOfBook(Book book, LibraryBranch libraryBranch);
 

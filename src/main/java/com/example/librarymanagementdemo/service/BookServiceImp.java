@@ -9,12 +9,6 @@ import com.example.librarymanagementdemo.exception.EntityFieldValidationExceptio
 import com.example.librarymanagementdemo.exception.EntityIdNullException;
 import com.example.librarymanagementdemo.exception.EntityNotFoundException;
 import com.example.librarymanagementdemo.repository.BookRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,17 +21,17 @@ import java.util.stream.Collectors;
 public class BookServiceImp implements  BookService{
 
     private BookRepository bookRepository;
-    private EntityManager entityManager;
 
     @Autowired
-    public BookServiceImp(BookRepository bookRepository, EntityManager entityManager) {
+    public BookServiceImp(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
-        this.entityManager = entityManager;
     }
 
     @Override
-    public List<Book> findAll() {
-        return bookRepository.findAll();
+    public List<Book> findAllWithOptionalFilter(String title, String ISBN, Integer publicationYear, String genre, Boolean available, Boolean multipleAuthors) {
+        return bookRepository.findByTitleAndISBNAndPublicationYearAndGenreAndAvailableEqualsAndMultipleAuthorsEquals(
+                title, ISBN, publicationYear, genre, available, multipleAuthors
+        );
     }
 
     @Override
@@ -74,59 +68,6 @@ public class BookServiceImp implements  BookService{
     @Override
     public List<Book> findByLibraryBranch(LibraryBranch libraryBranch) {
         return bookRepository.findByLibraryBranch(libraryBranch);
-    }
-
-    @Override
-    public List<Book> findByFilter(String title, String isbn, Integer publicationYear, String genre, String available, String multipleAuthors) {
-
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Book> query = builder.createQuery(Book.class);
-        Root<Book> root = query.from(Book.class);
-
-        List<Predicate> predicates = new ArrayList<>();
-
-        if(title != null){
-            predicates.add(builder.equal(root.get("title"), title));
-        }
-        if(isbn != null){
-            predicates.add(builder.equal(root.get("ISBN"), isbn));
-        }
-        if(publicationYear != null){
-            predicates.add(builder.equal(root.get("publicationYear"), publicationYear));
-        }
-        if(genre != null){
-            predicates.add(builder.equal(root.get("genre"), genre));
-        }
-        if(available != null){
-            if(available.equals("true")){
-                predicates.add(builder.equal(root.get("available"), true));
-            }
-            else if(available.equals("false")){
-                predicates.add(builder.equal(root.get("available"), false));
-            }
-            else{
-                throw new RuntimeException("Filter parameter in wrong format.");
-            }
-        }
-        if(multipleAuthors != null){
-            if(multipleAuthors.equals("true")){
-                predicates.add(builder.equal(root.get("multipleAuthors"), true));
-            }
-            else if(multipleAuthors.equals("false")){
-                predicates.add(builder.equal(root.get("multipleAuthors"), false));
-            }
-            else{
-                throw new RuntimeException("Filter parameter in wrong format.");
-            }
-
-        }
-
-        if(!predicates.isEmpty()){
-            query.where(builder.and(predicates.toArray(new Predicate[0])));
-        }
-
-        TypedQuery<Book> typedQuery = entityManager.createQuery(query);
-        return typedQuery.getResultList();
     }
 
     @Override

@@ -3,11 +3,12 @@ package com.example.librarymanagementdemo.service;
 import com.example.librarymanagementdemo.dto.LibraryUserDTO;
 import com.example.librarymanagementdemo.entity.LibraryUser;
 
+import java.util.Date;
 import java.util.List;
 
 public interface LibraryUserService {
 
-    List<LibraryUser> findAll();
+    List<LibraryUser> findAllWithOptionalFilter(Date registrationDateBefore, Date registrationDateAfter);
 
     LibraryUser findById(int id);
 

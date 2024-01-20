@@ -35,14 +35,7 @@ public class LibraryBranchRestController {
             @RequestParam(name = "location", required = false) String location,
             @RequestParam(name = "capacity", required = false) Integer capacity
     ){
-        List<LibraryBranch> libraryBranches;
-        if(name == null && location == null && capacity == null){
-
-            libraryBranches = libraryBranchService.findAll();
-        }
-        else{
-            libraryBranches = libraryBranchService.findByFilter(name, location, capacity);
-        }
+        List<LibraryBranch> libraryBranches = libraryBranchService.findAllWithOptionalFilter(name, location, capacity);
 
         List<LibraryBranchDTO> libraryBranchDTOs = libraryBranches.stream()
                 .map(libraryBranchService::convertLibraryBranchEntityToLibraryBranchDTO)
@@ -71,13 +64,12 @@ public class LibraryBranchRestController {
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(bookDTOs, HttpStatus.OK);
-
     }
 
     @PostMapping
     public ResponseEntity<LibraryBranchDTO> addLibraryBranch(@RequestBody LibraryBranchDTO libraryBranchDTO) {
 
-        libraryBranchDTO.setId(0); //to force a save of new item
+        libraryBranchDTO.setId(0);
         List<Book> books = new ArrayList<>();
 
         libraryBranchService.validateLibraryBranch(libraryBranchDTO);
@@ -103,7 +95,6 @@ public class LibraryBranchRestController {
         LibraryBranch libraryBranch = new LibraryBranch();
         if(libraryBranchDTO.getId() != 0){
             libraryBranch = libraryBranchService.findById(libraryBranchDTO.getId());
-
         }
         else{
             libraryBranch.setId(0);

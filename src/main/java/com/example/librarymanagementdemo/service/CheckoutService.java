@@ -3,11 +3,13 @@ package com.example.librarymanagementdemo.service;
 import com.example.librarymanagementdemo.dto.CheckoutDTO;
 import com.example.librarymanagementdemo.entity.*;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public interface CheckoutService {
 
-    List<Checkout> findAll();
+    List<Checkout> findAllWithOptionalFilter(Boolean active, Date checkedOutDateBefore, Date checkedOutDateAfter, Date dueDateBefore, Date dueDateAfter);
 
     Checkout findById(int id);
 
@@ -33,5 +35,5 @@ public interface CheckoutService {
 
     void validateAddCheckout(CheckoutDTO checkoutDTO);
 
-    void valdiateUpdateCheckout(CheckoutDTO checkoutDTO, int bookId, int libraryUserId);
+    void validateUpdateCheckout(CheckoutDTO checkoutDTO, int bookId, int libraryUserId);
 }

@@ -23,6 +23,9 @@ public class Checkout {
     @Column(name="due_date")
     private Date dueDate;
 
+    @Column(name="active")
+    private Boolean active;
+
     //checkout-libraryuser relationship //jsonbackreference?
     @ManyToOne(cascade= {
             CascadeType.PERSIST, CascadeType.MERGE,
@@ -70,6 +73,14 @@ public class Checkout {
         this.id = id;
     }
 
+    public Boolean isActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     public LibraryUser getLibraryUser() {
         return libraryUser;
     }
@@ -92,8 +103,7 @@ public class Checkout {
                 "id=" + id +
                 ", checkedOutDate=" + checkedOutDate +
                 ", dueDate=" + dueDate +
-               // ", libraryUser=" + libraryUser +
-                //", book=" + book +
+                ", isActive=" + active +
                 '}';
     }
 }

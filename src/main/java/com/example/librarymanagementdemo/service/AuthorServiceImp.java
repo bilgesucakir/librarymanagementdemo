@@ -7,10 +7,6 @@ import com.example.librarymanagementdemo.exception.EntityFieldValidationExceptio
 import com.example.librarymanagementdemo.exception.EntityNotFoundException;
 import com.example.librarymanagementdemo.repository.AuthorRepository;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,17 +22,14 @@ public class AuthorServiceImp implements AuthorService{
 
     private AuthorRepository authorRepository;
 
-    private EntityManager entityManager;
-
     @Autowired
-    public AuthorServiceImp(AuthorRepository authorRepository, EntityManager entityManager) {
+    public AuthorServiceImp(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
-        this.entityManager = entityManager;
     }
 
     @Override
-    public List<Author> findAll() {
-        return authorRepository.findAll();
+    public List<Author> findAllWithOptionalfilter(String name, Date birthdate, String nationality) {
+        return authorRepository.findByNameAndBiographyEqualsAndNationality(name, birthdate, nationality);
     }
 
     @Override
@@ -68,34 +61,6 @@ public class AuthorServiceImp implements AuthorService{
     @Override
     public List<Author> findByBook(Book book) {
         return authorRepository.findByBooksContaining(book);
-    }
-
-    @Override
-    public List<Author> findByFilter(String name, Date birthdate, String nationality) {
-
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Author> query = builder.createQuery(Author.class);
-        Root<Author> root = query.from(Author.class);
-
-        List<Predicate> predicates = new ArrayList<>();
-
-        if (name != null) {
-            predicates.add(builder.equal(root.get("name"), name));
-        }
-        if (birthdate != null) {
-            predicates.add(builder.equal(root.get("birthdate"), birthdate));
-        }
-        if (nationality != null) {
-            predicates.add(builder.equal(root.get("nationality"), nationality));
-        }
-
-
-        if (!predicates.isEmpty()) {
-            query.where(builder.and(predicates.toArray(new Predicate[0])));
-        }
-
-        TypedQuery<Author> typedQuery = entityManager.createQuery(query);
-        return typedQuery.getResultList();
     }
 
     @Override

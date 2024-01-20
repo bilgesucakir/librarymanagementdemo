@@ -1,14 +1,23 @@
 package com.example.librarymanagementdemo.service;
 
 import com.example.librarymanagementdemo.dto.CheckoutDTO;
+import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.Checkout;
 import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.example.librarymanagementdemo.exception.*;
 import com.example.librarymanagementdemo.repository.CheckoutRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +32,13 @@ public class CheckoutServiceImp implements CheckoutService{
     }
 
     @Override
-    public List<Checkout> findAll() {
-        return checkoutRepository.findAll();
+    public List<Checkout> findAllWithOptionalFilter(Boolean active, Date checkedOutDateBefore, Date checkedOutDateAfter, Date dueDateBefore, Date dueDateAfter) {
+
+        return checkoutRepository.findByActiveEqualsAndCheckedOutDateBeforeAndCheckedOutDateAfterAndDueDateBeforeAndDueDateAfter(
+                active, checkedOutDateBefore, checkedOutDateAfter, dueDateBefore, dueDateAfter
+        );
     }
+
 
     @Override
     public Checkout findById(int id) {
@@ -70,6 +83,7 @@ public class CheckoutServiceImp implements CheckoutService{
         checkout.setId(dto.getId());
         checkout.setCheckedOutDate(dto.getCheckedOutDate());
         checkout.setDueDate(dto.getDueDate());
+        checkout.setActive(dto.isActive());
 
         //book and user will be set after checks done
 
@@ -85,6 +99,7 @@ public class CheckoutServiceImp implements CheckoutService{
         dto.setId(checkout.getId());
         dto.setCheckedOutDate(checkout.getCheckedOutDate());
         dto.setDueDate(checkout.getDueDate());
+        dto.setActive(checkout.isActive());
 
         dto.setBookId(checkout.getBook().getId());
         dto.setUserId(checkout.getLibraryUser().getId());
@@ -100,6 +115,9 @@ public class CheckoutServiceImp implements CheckoutService{
         }
         if(checkoutDTO.getCheckedOutDate() != null){
             checkout.setCheckedOutDate(checkoutDTO.getCheckedOutDate());
+        }
+        if(checkoutDTO.isActive() != null){
+            checkout.setActive(checkoutDTO.isActive());
         }
 
         return checkout;
@@ -146,17 +164,19 @@ public class CheckoutServiceImp implements CheckoutService{
     }
 
     @Override
-    public void valdiateUpdateCheckout(CheckoutDTO checkoutDTO, int bookId, int libraryUserId){
+    public void validateUpdateCheckout(CheckoutDTO checkoutDTO, int bookId, int libraryUserId){
 
         //book and user id must match if not null with existing record
         if(checkoutDTO.getBookId() != null && bookId != checkoutDTO.getBookId()){
             throw new EntityIdChangeNotAllowedException("You cannot alter book id of a checkout during update.");
         }
         if(checkoutDTO.getUserId() != null && libraryUserId != checkoutDTO.getUserId()){
-            throw new EntityIdChangeNotAllowedException("You cannot alter libaryuser id of a checkout.");
+            throw new EntityIdChangeNotAllowedException("You cannot alter libary user id of a checkout.");
         }
         if(!checkoutDTO.getCheckedOutDate().before(checkoutDTO.getDueDate())){
             throw new EntityFieldValidationException("Checked out date cannot be bigger than or equal to due date.");
         }
     }
+
+
 }

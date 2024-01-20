@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,8 +26,8 @@ public class LibraryUserServiceImp implements LibraryUserService{
     }
 
     @Override
-    public List<LibraryUser> findAll() {
-        return libraryUserRepository.findAll();
+    public List<LibraryUser> findAllWithOptionalFilter(Date registrationDateBefore, Date registrationDateAfter) {
+        return libraryUserRepository.findByRegistrationDateBeforeAndRegistrationDateAfter(registrationDateBefore, registrationDateAfter);
     }
 
     @Override

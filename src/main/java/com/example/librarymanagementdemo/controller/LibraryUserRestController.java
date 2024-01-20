@@ -6,10 +6,12 @@ import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.example.librarymanagementdemo.service.CheckoutService;
 import com.example.librarymanagementdemo.service.LibraryUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,9 +30,14 @@ public class LibraryUserRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LibraryUserDTO>> findAll(){
+    public ResponseEntity<List<LibraryUserDTO>> findAllWithOptionalFilter(
+            @RequestParam(name = "registrationDateBefore", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date registrationDateBefore,
+            @RequestParam(name = "registrationDateAfter", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date registrationDateAfter
+    ){
 
-        List<LibraryUserDTO> libraryUserDTOs = libraryUserService.findAll().stream()
+        List<LibraryUserDTO> libraryUserDTOs = libraryUserService
+                .findAllWithOptionalFilter(registrationDateBefore, registrationDateAfter)
+                .stream()
                 .map(libraryUserService::convertLibraryUserEntityTolibraryUserDTO)
                 .collect(Collectors.toList());
 
@@ -62,7 +69,6 @@ public class LibraryUserRestController {
     @PostMapping
     public ResponseEntity<LibraryUserDTO> addLibraryUser(@RequestBody LibraryUserDTO libraryUserDTO) {
 
-        //username and email checks
         libraryUserService.validateAddLibraryUser(libraryUserDTO);
 
         libraryUserDTO.setId(0);
@@ -87,8 +93,6 @@ public class LibraryUserRestController {
         else{
             libraryUser.setId(0); //add new libraryuser
 
-            //since id is not given, this operation will be treated as new record adding to the database.
-            //Thus, username and email fields should be non-redundant.
             libraryUserService.validateAddLibraryUser(libraryUserDTO);
         }
 

@@ -13,6 +13,8 @@ public class CheckoutDTO {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date dueDate;
+
+    private boolean isActive;
     private Integer userId;
     private Integer bookId;
 
@@ -40,6 +42,14 @@ public class CheckoutDTO {
         this.dueDate = dueDate;
     }
 
+    public Boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
     public Integer getUserId() {
         return userId;
     }
@@ -64,6 +74,7 @@ public class CheckoutDTO {
                 "id=" + id +
                 ", checkedOutDate=" + checkedOutDate +
                 ", dueDate=" + dueDate +
+                ", isActive=" + isActive +
                 ", userId=" + userId +
                 ", bookId=" + bookId +
                 '}';

@@ -8,11 +8,10 @@ import java.util.List;
 
 public interface LibraryBranchService {
 
-    List<LibraryBranch> findAll();
+
+    List<LibraryBranch> findAllWithOptionalFilter(String name, String location, Integer capacity);
 
     LibraryBranch findById(int id);
-
-    List<LibraryBranch> findByFilter(String name, String location, Integer capacity);
 
     LibraryBranch save(LibraryBranch libraryBranch);
 
@@ -29,4 +28,5 @@ public interface LibraryBranchService {
     LibraryBranch updateLibraryBranchPartially(LibraryBranch libraryBranch, LibraryBranchDTO libraryBranchDTO);
 
     void validateLibraryBranch(LibraryBranchDTO libraryBranchDTO);
+
 }

@@ -15,9 +15,9 @@ public class BookDTO {
 
     private String genre;
 
-    private boolean available;
+    private Boolean available;
 
-    private boolean multipleAuthors;
+    private Boolean multipleAuthors;
 
     private Integer libraryBranchId;
     private List<Integer> authorIds;
@@ -63,19 +63,19 @@ public class BookDTO {
         this.genre = genre;
     }
 
-    public boolean isAvailable() {
+    public Boolean isAvailable() {
         return available;
     }
 
-    public void setAvailable(boolean available) {
+    public void setAvailable(Boolean available) {
         this.available = available;
     }
 
-    public boolean isMultipleAuthors() {
+    public Boolean isMultipleAuthors() {
         return multipleAuthors;
     }
 
-    public void setMultipleAuthors(boolean multipleAuthors) {
+    public void setMultipleAuthors(Boolean multipleAuthors) {
         this.multipleAuthors = multipleAuthors;
     }
 

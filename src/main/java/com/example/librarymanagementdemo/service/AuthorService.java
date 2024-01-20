@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface AuthorService {
-    List<Author> findAll();
+    List<Author> findAllWithOptionalfilter(String name, Date birthdate, String nationality);
 
     Author findById(int id);
 
@@ -17,8 +17,6 @@ public interface AuthorService {
     void deleteById(int id);
 
     List<Author> findByBook(Book book);
-
-    List<Author> findByFilter(String name, Date birthdate, String nationality);
 
     Author convertAuthorDTOToAuthorEntity(AuthorDTO dto);
 
