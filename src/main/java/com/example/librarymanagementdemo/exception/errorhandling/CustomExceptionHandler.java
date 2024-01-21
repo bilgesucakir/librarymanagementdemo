@@ -6,34 +6,66 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestControllerAdvice
 public class CustomExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleException(EntityFieldValidationException exc) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exc.getMessage(), System.currentTimeMillis());
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+
+        List<String> errors = new ArrayList<>();
+        errors.add(exc.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errors, System.currentTimeMillis());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleException(EntityIdChangeNotAllowedException exc) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.METHOD_NOT_ALLOWED.value(), exc.getMessage(), System.currentTimeMillis());
-        return new ResponseEntity<>(error, HttpStatus.METHOD_NOT_ALLOWED);
+        List<String> errors = new ArrayList<>();
+        errors.add(exc.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.METHOD_NOT_ALLOWED.value(), errors, System.currentTimeMillis());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleException(EntityIdNullException exc) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exc.getMessage(), System.currentTimeMillis());
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        List<String> errors = new ArrayList<>();
+        errors.add(exc.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errors, System.currentTimeMillis());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleException(EntityNotFoundException exc) {
-        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND.value(), exc.getMessage(), System.currentTimeMillis());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        List<String> errors = new ArrayList<>();
+        errors.add(exc.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), errors, System.currentTimeMillis());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleException(MethodArgumentNotValidException exc) {
+
+        List<String> errors = exc.getBindingResult().getAllErrors().stream().map(ObjectError::getDefaultMessage).collect(Collectors.toList());
+
+        ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errors, System.currentTimeMillis());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -44,20 +76,27 @@ public class CustomExceptionHandler {
             return handleInvalidFormatException((InvalidFormatException) cause);
         }
         else{
-            ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Invalid request format", System.currentTimeMillis());
-            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+            List<String> errors = new ArrayList<>();
+            errors.add("Invalid request format");
+
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errors, System.currentTimeMillis());
+
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
     }
 
     @ExceptionHandler //for all exception types
     public ResponseEntity<ErrorResponse> handleException(Exception exc) {
-
         System.out.println(exc.getCause());
-        ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exc.getMessage(), System.currentTimeMillis());
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        List<String> errors = new ArrayList<>();
+        errors.add(exc.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), errors, System.currentTimeMillis());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    //invalid date format exception for checkout fields of checkedOutDate and dueDate
     private ResponseEntity<ErrorResponse> handleInvalidFormatException(InvalidFormatException ex) {
         String fieldName = ex.getPath().stream()
                 .map(JsonMappingException.Reference::getFieldName)
@@ -65,7 +104,11 @@ public class CustomExceptionHandler {
                 .orElse("Unknown Field");
         String errorMessage = "Invalid date format for field " + fieldName + " as '" + ex.getValue() + "'. Please use the format 'yyyy-MM-dd HH:mm:ss'.";
 
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, System.currentTimeMillis());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        List<String> errors = new ArrayList<>();
+        errors.add(errorMessage);
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), errors, System.currentTimeMillis());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

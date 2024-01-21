@@ -1,16 +1,19 @@
 package com.example.librarymanagementdemo.exception.errorhandling;
+
+import java.util.List;
+
 public class ErrorResponse {
 
     private int status;
-    private String message;
+    private List<String> errorMessages;
     private long timeStamp;
 
     public ErrorResponse() {
     }
 
-    public ErrorResponse(int status, String message, long timeStamp) {
+    public ErrorResponse(int status, List<String> messages, long timeStamp) {
         this.status = status;
-        this.message = message;
+        this.errorMessages = messages;
         this.timeStamp = timeStamp;
     }
 
@@ -22,12 +25,12 @@ public class ErrorResponse {
         this.status = status;
     }
 
-    public String getMessage() {
-        return message;
+    public List<String> getErrorMessages() {
+        return errorMessages;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setErrorMessages(List<String> errorMessages) {
+        this.errorMessages = errorMessages;
     }
 
     public long getTimeStamp() {

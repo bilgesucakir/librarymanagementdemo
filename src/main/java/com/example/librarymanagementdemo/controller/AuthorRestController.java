@@ -6,6 +6,7 @@ import com.example.librarymanagementdemo.entity.Author;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.service.AuthorService;
 import com.example.librarymanagementdemo.service.BookService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -69,9 +70,9 @@ public class AuthorRestController {
     }
 
     @PostMapping
-    public ResponseEntity<AuthorDTO> addAuthor(@RequestBody AuthorDTO authorDTO) { //get entity params from body
+    public ResponseEntity<AuthorDTO> addAuthor(@Valid @RequestBody AuthorDTO authorDTO) { //get entity params from body
 
-        authorService.validateAuthor(authorDTO);
+        //authorService.validateAuthor(authorDTO);
 
         authorDTO.setId(0);
         Author author = authorService.convertAuthorDTOToAuthorEntity(authorDTO);
@@ -90,22 +91,9 @@ public class AuthorRestController {
     }
 
     @PutMapping
-    public ResponseEntity<AuthorDTO> updateAuthor(@RequestBody AuthorDTO authorDTO) {
+    public ResponseEntity<AuthorDTO> updateAuthor(@Valid @RequestBody AuthorDTO authorDTO) {
 
-        Author author = new Author();
-
-        if(authorDTO.getId() != 0){ //replace existing instance
-
-            if(authorDTO.getName() != null){
-                authorService.validateAuthor(authorDTO);
-            }
-            author = authorService.findById(authorDTO.getId());
-        }
-        else{ //create new instance
-            author.setId(0);
-
-            authorService.validateAuthor(authorDTO);
-        }
+        Author author = authorService.findById(authorDTO.getId());
 
         author = authorService.updateAuthorPartially(author, authorDTO);
 

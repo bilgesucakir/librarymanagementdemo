@@ -134,15 +134,6 @@ public class AuthorServiceImp implements AuthorService{
         return save(tempAuthor);
     }
 
-    @Override
-    public void validateAuthor(AuthorDTO authorDTO) {
-        if(authorDTO.getName() != null){
-            if(authorDTO.getName().trim().isEmpty()){
-                throw new EntityFieldValidationException("Wrong author name format. Author name only contains whitespaces.");
-            }
-        }
-    }
-
     public Author setBooksOfAuthor(Author author, List<Book> books) {
 
         author.setBooks(books);

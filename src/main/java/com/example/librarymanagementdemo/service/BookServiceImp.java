@@ -198,18 +198,4 @@ public class BookServiceImp implements  BookService{
         }
     }
 
-    @Override
-    public void validateUpdateBook(BookDTO bookDTO) {
-        if(bookDTO.getTitle() != null) {
-            if (bookDTO.getTitle().trim().isEmpty()) {
-                throw new EntityFieldValidationException("Wrong book title format. Book title only contains whitespaces");
-            }
-        }
-        if(bookDTO.getISBN() != null){
-            if(!bookDTO.getISBN().matches("\\d{13}")){  //not being a string of length 13 and only numeric chars
-                throw new EntityFieldValidationException("Wrong ISBN format given.");
-            }
-        }
-    }
-
 }

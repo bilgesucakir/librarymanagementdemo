@@ -6,6 +6,7 @@ import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
 import com.example.librarymanagementdemo.service.BookService;
 import com.example.librarymanagementdemo.service.LibraryBranchService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,12 +68,10 @@ public class LibraryBranchRestController {
     }
 
     @PostMapping
-    public ResponseEntity<LibraryBranchDTO> addLibraryBranch(@RequestBody LibraryBranchDTO libraryBranchDTO) {
+    public ResponseEntity<LibraryBranchDTO> addLibraryBranch(@Valid @RequestBody LibraryBranchDTO libraryBranchDTO) {
 
         libraryBranchDTO.setId(0);
         List<Book> books = new ArrayList<>();
-
-        libraryBranchService.validateLibraryBranch(libraryBranchDTO);
 
         if(libraryBranchDTO.getBookIds() != null) {
             books = libraryBranchDTO.getBookIds().stream()
@@ -90,19 +89,13 @@ public class LibraryBranchRestController {
     }
 
     @PutMapping
-    public ResponseEntity<LibraryBranchDTO> updateLibraryBranch(@RequestBody LibraryBranchDTO libraryBranchDTO) {
+    public ResponseEntity<LibraryBranchDTO> updateLibraryBranch(@Valid @RequestBody LibraryBranchDTO libraryBranchDTO) {
 
-        LibraryBranch libraryBranch = new LibraryBranch();
-        if(libraryBranchDTO.getId() != 0){
-            libraryBranch = libraryBranchService.findById(libraryBranchDTO.getId());
-        }
-        else{
-            libraryBranch.setId(0);
-        }
+        LibraryBranch libraryBranch = libraryBranchService.findById(libraryBranchDTO.getId());
 
         libraryBranch = libraryBranchService.updateLibraryBranchPartially(libraryBranch, libraryBranchDTO);
-        LibraryBranch libraryBranchInDB;
 
+        LibraryBranch libraryBranchInDB;
         if(libraryBranchDTO.getBookIds() != null){
             List<Book> books = libraryBranchDTO.getBookIds().stream()
                     .map(bookService::findById)
@@ -116,7 +109,6 @@ public class LibraryBranchRestController {
         }
 
         LibraryBranchDTO returnLibraryBranchDTO = libraryBranchService.convertLibraryBranchEntityToLibraryBranchDTO(libraryBranchInDB);
-
         return new ResponseEntity<>(returnLibraryBranchDTO, HttpStatus.OK);
     }
 

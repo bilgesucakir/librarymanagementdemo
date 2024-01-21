@@ -1,10 +1,16 @@
 package com.example.librarymanagementdemo.dto;
 
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import java.util.List;
 
 public class LibraryBranchDTO {
 
     private int id;
+
+    @Pattern(regexp = "^(?:(?!\\s*$).+)?$", message = "Library branch name must contain at least one non-whitespace character")
+    @Size(min=2, message="Library branch name must be at least two characters long")
     private String name;
     private String location;
     private Integer capacity;

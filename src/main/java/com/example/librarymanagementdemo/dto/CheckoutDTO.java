@@ -1,9 +1,12 @@
 package com.example.librarymanagementdemo.dto;
 
+import com.example.librarymanagementdemo.validation.annotation.DateRange;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Date;
 
+@DateRange(first = "checkedOutDate", second = "dueDate", message = "Checked out date cannot be later than due date")
 public class CheckoutDTO {
 
     private int id;
@@ -15,7 +18,11 @@ public class CheckoutDTO {
     private Date dueDate;
 
     private boolean isActive;
+
+    @NotNull(message="User id field cannot be null")
     private Integer userId;
+
+    @NotNull(message="Book id field cannot be null")
     private Integer bookId;
 
     public int getId() {

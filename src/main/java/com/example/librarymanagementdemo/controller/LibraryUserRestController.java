@@ -69,12 +69,12 @@ public class LibraryUserRestController {
     @PostMapping
     public ResponseEntity<LibraryUserDTO> addLibraryUser(@RequestBody LibraryUserDTO libraryUserDTO) {
 
-        libraryUserService.validateAddLibraryUser(libraryUserDTO);
+        libraryUserService.checkDuplicateEmailAndUsernameForAdd(libraryUserDTO);
 
         libraryUserDTO.setId(0);
 
         LibraryUser libraryUser = libraryUserService.convertLibraryUserDTOToLibraryUserEntity(libraryUserDTO);
-        LibraryUser userInDB = libraryUserService.save(libraryUser); //is it empty list?
+        LibraryUser userInDB = libraryUserService.save(libraryUser);
 
         LibraryUserDTO returnLibraryUserDTO = libraryUserService.convertLibraryUserEntityTolibraryUserDTO(userInDB);
         return new ResponseEntity<>(returnLibraryUserDTO, HttpStatus.OK);
@@ -83,18 +83,9 @@ public class LibraryUserRestController {
     @PutMapping
     public ResponseEntity<LibraryUserDTO> updateLibraryUser(@RequestBody LibraryUserDTO libraryUserDTO) {
 
-        LibraryUser libraryUser = new LibraryUser();
+        LibraryUser libraryUser = libraryUserService.findById(libraryUserDTO.getId());
 
-        if(libraryUserDTO.getId() != 0){
-            libraryUser = libraryUserService.findById(libraryUserDTO.getId());
-
-            libraryUserService.validateUpdateLibraryUser(libraryUserDTO, libraryUser.getUsername(), libraryUser.getEmail());
-        }
-        else{
-            libraryUser.setId(0); //add new libraryuser
-
-            libraryUserService.validateAddLibraryUser(libraryUserDTO);
-        }
+        libraryUserService.checkDuplicateEmailAndUsernameForUpdate(libraryUserDTO, libraryUser.getUsername(), libraryUser.getEmail());
 
         libraryUser = libraryUserService.updateLibraryUserPartially(libraryUser, libraryUserDTO);
         LibraryUser libraryUserInDB = libraryUserService.save(libraryUser);

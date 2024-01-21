@@ -6,6 +6,7 @@ import com.example.librarymanagementdemo.entity.LibraryUser;
 import com.example.librarymanagementdemo.service.BookService;
 import com.example.librarymanagementdemo.service.CheckoutService;
 import com.example.librarymanagementdemo.service.LibraryUserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -59,9 +60,7 @@ public class CheckoutRestController {
     }
 
     @PostMapping
-    public ResponseEntity<CheckoutDTO> addCheckout(@RequestBody CheckoutDTO checkoutDTO) {
-
-        checkoutService.validateAddCheckout(checkoutDTO);
+    public ResponseEntity<CheckoutDTO> addCheckout(@Valid @RequestBody CheckoutDTO checkoutDTO) {
 
         Book book = bookService.findById(checkoutDTO.getBookId());
         LibraryUser libraryUser = libraryUserService.findById(checkoutDTO.getUserId());
@@ -78,26 +77,10 @@ public class CheckoutRestController {
     @PutMapping
     public ResponseEntity<CheckoutDTO> updateCheckout(@RequestBody CheckoutDTO checkoutDTO) {
 
-        Checkout checkout = new Checkout();
-        Checkout checkoutInDB;
+        Checkout checkout = checkoutService.findById(checkoutDTO.getId());
 
-        if(checkoutDTO.getId() == 0){
-            checkoutService.validateAddCheckout(checkoutDTO);
-
-            checkout.setId(0);
-            checkout = checkoutService.updateCheckoutPartially(checkout, checkoutDTO);
-
-            Book book = bookService.findById(checkoutDTO.getBookId());
-            LibraryUser libraryUser = libraryUserService.findById(checkoutDTO.getUserId());
-
-            checkoutInDB = checkoutService.setFieldsAndSaveCheckout(checkout, book, libraryUser);
-        }
-        else{
-            checkoutService.validateUpdateCheckout(checkoutDTO, checkout.getBook().getId(), checkout.getLibraryUser().getId());
-
-            checkout = checkoutService.updateCheckoutPartially(checkout, checkoutDTO);
-            checkoutInDB = checkoutService.setFieldsAndSaveCheckout(checkout, null, null);
-        }
+        checkout = checkoutService.updateCheckoutPartially(checkout, checkoutDTO);
+        Checkout checkoutInDB = checkoutService.setFieldsAndSaveCheckout(checkout, null, null);
 
         CheckoutDTO returnCheckoutDTO = checkoutService.convertCheckoutEntityToCheckoutDTO(checkoutInDB);
         return new ResponseEntity<>(returnCheckoutDTO, HttpStatus.OK);

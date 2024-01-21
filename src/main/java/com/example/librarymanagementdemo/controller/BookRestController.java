@@ -11,6 +11,7 @@ import com.example.librarymanagementdemo.service.AuthorService;
 import com.example.librarymanagementdemo.service.BookService;
 import com.example.librarymanagementdemo.service.CheckoutService;
 import com.example.librarymanagementdemo.service.LibraryBranchService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -90,14 +91,11 @@ public class BookRestController {
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(checkoutDTOs, HttpStatus.OK);
-
     }
 
     @PostMapping
-    public ResponseEntity<BookDTO> addBook(@RequestBody BookDTO bookDTO)
+    public ResponseEntity<BookDTO> addBook(@Valid @RequestBody BookDTO bookDTO)
     {
-        bookService.validateAddBook(bookDTO);
-
         LibraryBranch libraryBranch = libraryBranchService.findById(bookDTO.getLibraryBranchId());
 
         bookDTO.setId(0);
@@ -118,28 +116,13 @@ public class BookRestController {
     }
 
     @PutMapping
-    public ResponseEntity<BookDTO> updateBook(@RequestBody BookDTO bookDTO) {
+    public ResponseEntity<BookDTO> updateBook(@Valid @RequestBody BookDTO bookDTO) {
 
         LibraryBranch libraryBranch = null;
 
-        if(bookDTO.getLibraryBranchId() != null){
-            libraryBranch = libraryBranchService.findById(bookDTO.getLibraryBranchId());
+        libraryBranch = libraryBranchService.findById(bookDTO.getLibraryBranchId());
 
-        }
-
-        Book book = new Book();
-
-        if(bookDTO.getId() != 0){
-            int bookIdFromGet = bookDTO.getId();
-            book = bookService.findById(bookIdFromGet);
-
-            bookService.validateAddBook(bookDTO);
-        }
-        else{
-            book.setId(0);
-
-            bookService.validateUpdateBook(bookDTO);
-        }
+        Book book = bookService.findById(bookDTO.getId());
 
         book = bookService.updateBookPartially(book, bookDTO);
 

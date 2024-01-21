@@ -121,74 +121,22 @@ public class LibraryUserServiceImp implements LibraryUserService{
     }
 
     @Override
-    public void validateAddLibraryUser(LibraryUserDTO libraryUserDTO) {
-        if(libraryUserDTO.getUsername() == null){
-            throw new EntityFieldValidationException("Username field of libraryuser cannot be empty.");
+    public void checkDuplicateEmailAndUsernameForAdd(LibraryUserDTO libraryUserDTO) {
+        if(libraryUserExistsWithUsernameOrNot(libraryUserDTO.getUsername())){
+            throw new EntityFieldValidationException("Given username already exists in database");
         }
-        else{
-            String usernameInput = libraryUserDTO.getUsername();
-
-            if(libraryUserExistsWithUsernameOrNot(usernameInput)){
-                throw new EntityFieldValidationException("Given username \""
-                        + usernameInput + "\" already exists in database.");
-            }
-            else{
-                if(usernameInput.matches(".*\\s.*")){
-                    throw new EntityFieldValidationException("Given username \""
-                            + usernameInput + "\" contains at least one whitespace character.");
-                }
-            }
-        }
-
-        if(libraryUserDTO.getEmail() == null){
-            throw new EntityFieldValidationException("Email field of libraryuser cannot be empty.");
-        }
-        else{
-            String emailInput = libraryUserDTO.getEmail();
-
-            if(libraryUserExistsWithEmailOrNot(emailInput)){
-                throw new EntityFieldValidationException("CGiven email \""
-                        + emailInput + "\" already exists in database.");
-            }
-            else{
-                if(!emailInput.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
-                    throw new EntityFieldValidationException("Given email \""
-                            + emailInput + "\" is not in correct format.");
-                }
-            }
+        if(libraryUserExistsWithEmailOrNot(libraryUserDTO.getEmail())){
+            throw new EntityFieldValidationException("Given email already exists in database");
         }
     }
 
     @Override
-    public void validateUpdateLibraryUser(LibraryUserDTO libraryUserDTO, String username, String email){
-        if(libraryUserDTO.getUsername() != null && !libraryUserDTO.getUsername().equals(username) ){ //username change
-            String usernameInput = libraryUserDTO.getUsername();
-
-            if(libraryUserExistsWithUsernameOrNot(usernameInput)){
-                throw new EntityFieldValidationException("Given username \""
-                        + usernameInput + "\" already exists in database.");
-            }
-            else{
-                if(usernameInput.matches(".*\\s.*")){
-                    throw new EntityFieldValidationException("Given username \""
-                            + usernameInput + "\" contains at least one whitespace character.");
-                }
-            }
+    public void checkDuplicateEmailAndUsernameForUpdate(LibraryUserDTO libraryUserDTO, String username, String email){
+        if(!libraryUserDTO.getUsername().equals(username) && libraryUserExistsWithUsernameOrNot(libraryUserDTO.getUsername())){
+            throw new EntityFieldValidationException("Given username already exists in database");
         }
-        if(libraryUserDTO.getEmail() != null && !libraryUserDTO.getEmail().equals(email)){ //email change
-            String emailInput = libraryUserDTO.getEmail();
-
-            if(libraryUserExistsWithEmailOrNot(emailInput)){
-                throw new EntityFieldValidationException("Given email \""
-                        + emailInput + "\" already exists in database.");
-            }
-            else{
-                System.out.println("\""+ emailInput + "\"");
-                if(!emailInput.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
-                    throw new EntityFieldValidationException("CGiven email \""
-                            + emailInput + "\" is not in correct format.");
-                }
-            }
+        if(!libraryUserDTO.getEmail().equals(email) && libraryUserExistsWithEmailOrNot(libraryUserDTO.getEmail())){
+            throw new EntityFieldValidationException("Given email already exists in database");
         }
     }
 }

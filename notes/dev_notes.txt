@@ -1,13 +1,7 @@
-***TO DO***
+***NOTES***
+add bcrypt with jwt or oauth can be used too
 security config - authuser (with roles? role field should be added to the related table)
-
 use of bcrypt? - research for other crypt options suitable
-
 maybe frontend can be started with angular later on (as a separate project or addition to this one)
 
-***NOTES***
-
-to checkouts part, active or returned bool can be added--> returned checkout will be inactive
-
-add bcrypt with jwt or oauth can be used too
-
+test validation changes

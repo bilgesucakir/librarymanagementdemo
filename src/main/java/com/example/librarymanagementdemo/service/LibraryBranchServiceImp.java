@@ -3,10 +3,9 @@ package com.example.librarymanagementdemo.service;
 import com.example.librarymanagementdemo.dto.LibraryBranchDTO;
 import com.example.librarymanagementdemo.entity.Book;
 import com.example.librarymanagementdemo.entity.LibraryBranch;
-import com.example.librarymanagementdemo.exception.EntityFieldValidationException;
 import com.example.librarymanagementdemo.exception.EntityNotFoundException;
 import com.example.librarymanagementdemo.repository.LibraryBranchRepository;
-import jakarta.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -132,13 +131,5 @@ public class LibraryBranchServiceImp implements LibraryBranchService{
         return libraryBranch;
     }
 
-    @Override
-    public void validateLibraryBranch(LibraryBranchDTO libraryBranchDTO){
-        if(libraryBranchDTO.getName() != null){
-            if(libraryBranchDTO.getName().trim().isEmpty()){
-                throw new EntityFieldValidationException("Wrong library branch name format. Library branch name only contains white spaces.");
-            }
-        }
-    }
 
 }

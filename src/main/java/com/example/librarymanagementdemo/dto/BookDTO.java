@@ -1,5 +1,10 @@
 package com.example.librarymanagementdemo.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import java.util.List;
 
 public class BookDTO {
@@ -7,10 +12,14 @@ public class BookDTO {
 
     private int id;
 
+    @Pattern(regexp = "^(?:(?!\\s*$).+)?$", message = "Book title must contain at least one non-whitespace character")
+    @Size(min=2, message="Book title must be at least two characters long")
     private String title;
 
+    @Pattern(regexp = "^\\d{13}$", message = "ISBN must be a string of length 13 and contain only numeric characters")
     private String ISBN;
 
+    @Min(value=0, message="Invalid publication year format")
     private Integer publicationYear;
 
     private String genre;
@@ -19,6 +28,7 @@ public class BookDTO {
 
     private Boolean multipleAuthors;
 
+    @NotNull(message="Library branch id is not provided")
     private Integer libraryBranchId;
     private List<Integer> authorIds;
     private List<Integer> checkoutIds;

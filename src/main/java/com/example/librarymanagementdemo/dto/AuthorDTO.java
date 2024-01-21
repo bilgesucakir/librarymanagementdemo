@@ -1,14 +1,17 @@
 package com.example.librarymanagementdemo.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 import java.util.List;
+import jakarta.validation.constraints.*;
 
 public class AuthorDTO {
 
     private int id;
+
+    @Pattern(regexp = "^(?:(?!\\s*$).+)?$", message = "Author name must contain at least one non-whitespace character")
+    @Size(min=2, message="Author name must be at least two characters long")
     private String name;
     private String biography;
 

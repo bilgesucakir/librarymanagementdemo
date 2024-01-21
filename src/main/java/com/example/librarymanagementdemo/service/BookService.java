@@ -34,6 +34,4 @@ public interface BookService {
     Book updateBookPartially(Book book, BookDTO bookDTO);
 
     void validateAddBook(BookDTO bookDTO);
-
-    void validateUpdateBook(BookDTO bookDTO);
 }
